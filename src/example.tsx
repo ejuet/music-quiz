@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { AudioFileList, storeFileInIndexedDB } from "./database.tsx";
+import { AudioFileList } from "./database/DatabaseComponents.tsx";
+import { storeFileInIndexedDB } from "./database/database.ts";
 
 
 interface DropzoneProps {
