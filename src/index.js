@@ -14,11 +14,10 @@ const router = createHashRouter([
   {
     path: "/",
     element: <>
-<UploadSoundFile />
-<ResetDBButton />
-
-    </> ,
-  },
+      <UploadSoundFile />
+      <ResetDBButton />
+    </>
+  }
 ]);
 
 root.render(

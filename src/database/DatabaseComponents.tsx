@@ -42,7 +42,6 @@ export function AudioFileList() {
 
     return (
         <div>
-            <h2>Uploaded Files</h2>
             <ul>
                 {files.map((file, index) => (
                     <li key={index}>

@@ -27,14 +27,15 @@ export const storeFileInIndexedDB = async (file: File) => {
     return new Promise<void>((resolve, reject) => {
         const transaction = db.transaction('audioFiles', 'readwrite');
         const store = transaction.objectStore('audioFiles');
-        const request = store.add({file: file, fileName: file.name});
 
-        request.onsuccess = () => {
+        const addRequest = store.add({file: file});
+
+        addRequest.onsuccess = () => {
             triggerChangeNotification({type: 'add', detail: file});
             resolve();
         };
 
-        request.onerror = (event) => {
+        addRequest.onerror = (event) => {
             reject((event.target as IDBRequest).error);
         };
     });
