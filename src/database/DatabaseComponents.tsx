@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getFilesFromIndexedDB } from "./database.ts";
+import { deleteFileFromDB, getFilesFromIndexedDB } from "./database.ts";
 
 
 export const ResetDBButton: React.FC = () => {
@@ -32,6 +32,12 @@ export function AudioFileList() {
             setFiles(filesFromDB);
         };
         fetchFiles();
+
+        document.addEventListener('databaseChange', fetchFiles);
+
+        return () => {
+            document.removeEventListener('databaseChange', fetchFiles);
+        };
     }, []);
 
     return (
@@ -42,6 +48,9 @@ export function AudioFileList() {
                     <li key={index}>
                         {file.name}
                         <audio controls src={URL.createObjectURL(file)} />
+                        <button onClick={() => deleteFileFromDB(file, 'audioFiles')}>
+                            Delete
+                        </button>
                     </li>
                 ))}
             </ul>
