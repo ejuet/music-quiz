@@ -20,6 +20,10 @@ const router = createHashRouter([
     element: <p>home</p>,
   },
   {
+    path: "/edit",
+    element: <QuizEditor />
+  },
+  {
     path: "/edit/:tabKey",
     element: <QuizEditor />
   }
