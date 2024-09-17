@@ -28,16 +28,38 @@ export const storeFileInIndexedDB = async (file: File) => {
         const transaction = db.transaction('audioFiles', 'readwrite');
         const store = transaction.objectStore('audioFiles');
 
-        const addRequest = store.add({file: file});
+        const checkAndRenameFile = (file: File, store: IDBObjectStore, suffix: number = 1): Promise<File> => {
+            return new Promise((resolve, reject) => {
+                const fileName = suffix === 1 ? file.name : `${file.name.replace(/\.[^/.]+$/, "")}-${suffix}${file.name.match(/\.[^/.]+$/)}`;
+                const getRequest = store.get(fileName);
 
-        addRequest.onsuccess = () => {
-            triggerChangeNotification({type: 'add', detail: file});
-            resolve();
+                getRequest.onsuccess = () => {
+                    if (getRequest.result) {
+                        resolve(checkAndRenameFile(file, store, suffix + 1));
+                    } else {
+                        const newFile = new File([file], fileName, { type: file.type });
+                        resolve(newFile);
+                    }
+                };
+
+                getRequest.onerror = (event) => {
+                    reject((event.target as IDBRequest).error);
+                };
+            });
         };
 
-        addRequest.onerror = (event) => {
-            reject((event.target as IDBRequest).error);
-        };
+        return checkAndRenameFile(file, store).then((newFile) => {
+            const addRequest = store.add({file: newFile});
+
+            addRequest.onsuccess = () => {
+                triggerChangeNotification({type: 'add', detail: newFile});
+                resolve();
+            };
+
+            addRequest.onerror = (event) => {
+                reject((event.target as IDBRequest).error);
+            };
+        });
     });
 };
 
