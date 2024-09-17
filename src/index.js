@@ -9,50 +9,26 @@ import { HashRouter } from "react-router-dom";
 import { Routes, Route } from 'react-router-dom';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import { Editor } from './QuizEditor.tsx';
-import { Layout } from './QuizEditor.tsx';
+import { QuizEditor } from './QuizEditor.tsx';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-export const routes = [
+const router = createHashRouter([
   {
     path: "/",
     element: <p>home</p>,
   },
   {
-    path: "/edit",
-    element: <Layout />,
-    children: [
-      {
-        path: "grid",
-        element: <p>Display Grid</p>
-      },
-      {
-        path: "media",
-        element: <>
-          <h2>Audio Files</h2>
-          <UploadSoundFile />
-          <AudioFileList />
-          <ResetDBButton />
-        </>,
-      }
-    ]
+    path: "/edit/:tabKey",
+    element: <QuizEditor />
   }
-]
-const router = createHashRouter(routes);
+]);
 
 //tab stuff
-export const tabsParentRoute = "/edit";
-export function useTabKey(){
-  const location = useLocation();
-  return location.pathname.replace(tabsParentRoute, '').split('/')[1];
-}
 export function useNavigateToTab(){
   const navigate = useNavigate();
-  return (tab)=>navigate(tabsParentRoute + '/' + tab);
-}
-export function getTabs(){
-  return routes.filter(r => r.path === tabsParentRoute)[0].children.map(r => r.path);
+  return (tabKey)=>navigate('/edit/' + tabKey);
 }
 
 root.render(
