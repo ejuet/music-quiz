@@ -1,9 +1,9 @@
 import { Tab, Tabs } from "react-bootstrap";
 import React, { useEffect } from "react";
 import { Link, useNavigate, useLocation, Outlet, useParams } from 'react-router-dom';
-import { AudioFileList, ResetDBButton } from "./database/DatabaseComponents.tsx";
-import { UploadSoundFile } from "./example.tsx";
-import { useNavigateToTab } from "./index.js";
+import { AudioFileList, ResetDBButton } from "../Database/DatabaseComponents.tsx";
+import { UploadSoundFile } from "./Media/DropZoneSound.tsx";
+import { useNavigateToTab } from "../index.js";
 
 
 

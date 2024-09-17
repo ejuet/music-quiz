@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { deleteFileFromDB, getFilesFromIndexedDB } from "./database.ts";
+import { deleteFileFromDB, getFilesFromIndexedDB } from "../Logic/database.ts";
 import { Button, Modal } from "react-bootstrap";
 
 

@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { AudioFileList } from "./database/DatabaseComponents.tsx";
-import { storeFileInIndexedDB } from "./database/database.ts";
+import { storeFileInIndexedDB } from "../../Logic/database.ts";
 import { Dropzone } from "./DropZone.tsx";
 
 
