@@ -8,10 +8,12 @@ interface DropzoneProps {
 export const Dropzone: React.FC<DropzoneProps> = ({ onFileChanged, acceptedFileTypes }) => {
     const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
-        const file = event.dataTransfer.files[0];
-        if(file && (!acceptedFileTypes || file.type.match(acceptedFileTypes))) {
-            onFileChanged(file);
-        }
+        const files = Array.from(event.dataTransfer.files);
+        files.forEach(file => {
+            if(file && (!acceptedFileTypes || file.type.match(acceptedFileTypes))) {
+                onFileChanged(file);
+            }
+        });
     };
 
     const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
@@ -32,17 +34,20 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onFileChanged, acceptedFileT
                 cursor: "pointer",
             }}
         >
-            Drag and drop a file here, or click to select a file
+            Drag and drop files here, or click to select files
             <input
                 id="fileInput"
                 type="file"
                 accept={acceptedFileTypes}
+                multiple
                 style={{ display: "none" }}
                 onChange={(event) => {
-                    const file = event.target.files?.[0];
-                    if(file && (!acceptedFileTypes || file.type.match(acceptedFileTypes))) {
-                        onFileChanged(file);
-                    }
+                    const files = Array.from(event.target.files || []);
+                    files.forEach(file => {
+                        if(file && (!acceptedFileTypes || file.type.match(acceptedFileTypes))) {
+                            onFileChanged(file);
+                        }
+                    });
                 }}
             />
         </div>
