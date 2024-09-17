@@ -32,18 +32,15 @@ export function QuizEditor() {
         }
     }, [tabIsValid]);
 
-    return (
-        <>
-            <p>{tabIsValid ? "y" : "n"}</p>
-            <Tabs
-                activeKey={tabKey}
-                onSelect={(k) => { navigate(k) }}
-            >
-                {
-                    tabs
-                }
+    return <>
+        <Tabs
+            activeKey={tabKey}
+            onSelect={(k) => { navigate(k) }}
+        >
+            {
+                tabs
+            }
 
-            </Tabs>
-        </>
-    );
+        </Tabs>
+    </>
 }
