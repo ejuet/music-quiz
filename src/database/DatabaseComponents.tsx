@@ -55,7 +55,7 @@ export function AudioFileList() {
 function AudioFile({ file }) {
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-    return <div className="card m-2" style={{ width: '18rem' }}>
+    return <div className="card m-2" style={{ width: '25rem' }}>
         <div className="card-body">
             <h5 className="card-title">{file.name}</h5>
             <audio controls src={URL.createObjectURL(file)} className="w-100" />
