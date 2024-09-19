@@ -12,7 +12,7 @@ export interface MusicQuiz {
 }
 
 
-// Define the different types of "Question Parts"
+// ---------- Define the different types of "Question Parts" ----------
 
 const PlayableSongDef = t.type({
     filename: t.string
@@ -35,7 +35,7 @@ export type QuestionPart = t.TypeOf<typeof QuestionPartDef>;
 
 // ---------- Define the different types of "Questions" ----------
 
-// -- A question with multiple parts
+// --- A question with multiple parts ---
 const QuestionWithPartsDef = t.type({
     parts: t.array(QuestionPartDef)
 });
@@ -52,7 +52,7 @@ export class QuestionWithPartsWrapper implements QuestionWrapper {
     }
 }
 
-// -- An ordinary music quiz question
+// --- An ordinary music quiz question ---
 const SimpleQuestionDef = t.type({
     question: DisplayableText,
     song: PlayableSongDef,
@@ -80,6 +80,20 @@ export class SimpleQuestionWrapper implements QuestionWrapper {
     }
 }
 
+// --- An individual question part ---
+export class QuestionPartWrapper implements QuestionWrapper {
+    question: QuestionPart;
+
+    constructor(question: QuestionPart) {
+        this.question = question;
+    }
+
+    getParts(): QuestionPart[] {
+        return [this.question];
+    }
+}
+
+
 // ---------- Define the "Question" type ----------
 const QuestionDef = t.union([QuestionWithPartsDef, SimpleQuestionDef, QuestionPartDef]);
 
@@ -102,18 +116,6 @@ export class QuestionWrapperFactory {
         } else {
             throw new Error('Invalid question type');
         }
-    }
-}
-
-export class QuestionPartWrapper implements QuestionWrapper {
-    question: QuestionPart;
-
-    constructor(question: QuestionPart) {
-        this.question = question;
-    }
-
-    getParts(): QuestionPart[] {
-        return [this.question];
     }
 }
 
