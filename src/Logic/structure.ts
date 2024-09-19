@@ -1,5 +1,6 @@
 import * as t from 'io-ts';
 import { isRight } from 'fp-ts/Either';
+import { cons } from 'fp-ts/lib/ReadonlyNonEmptyArray';
 
 export class AppData {
     musicQuizzes: MusicQuiz[];
@@ -35,6 +36,8 @@ export type QuestionPart = t.TypeOf<typeof QuestionPartDef>;
 
 // ---------- Define the different types of "Questions" ----------
 
+const map = {}
+
 // --- A question with multiple parts ---
 const QuestionWithPartsDef = t.type({
     parts: t.array(QuestionPartDef)
@@ -51,6 +54,7 @@ export class QuestionWithPartsWrapper implements QuestionWrapper {
         return this.question.parts;
     }
 }
+map[QuestionWithPartsDef.name] = QuestionWithPartsWrapper;
 
 // --- An ordinary music quiz question ---
 const SimpleQuestionDef = t.type({
@@ -79,6 +83,7 @@ export class SimpleQuestionWrapper implements QuestionWrapper {
         ];
     }
 }
+map[SimpleQuestionDef.name] = SimpleQuestionWrapper;
 
 // --- An individual question part ---
 export class QuestionPartWrapper implements QuestionWrapper {
@@ -92,10 +97,12 @@ export class QuestionPartWrapper implements QuestionWrapper {
         return [this.question];
     }
 }
+map[QuestionPartDef.name] = QuestionPartWrapper;
 
 
 // ---------- Define the "Question" type ----------
-const QuestionDef = t.union([QuestionWithPartsDef, SimpleQuestionDef, QuestionPartDef]);
+const un = [QuestionWithPartsDef, SimpleQuestionDef, QuestionPartDef]  as [t.Mixed, t.Mixed, t.Mixed];
+const QuestionDef = t.union(un);
 
 export type Question = t.TypeOf<typeof QuestionDef>;
 
@@ -107,15 +114,13 @@ export interface QuestionWrapper {
 
 export class QuestionWrapperFactory {
     static create(question: Question): QuestionWrapper {
-        if (isRight(QuestionWithPartsDef.decode(question))) {
-            return new QuestionWithPartsWrapper(question as QuestionWithParts);
-        } else if (isRight(SimpleQuestionDef.decode(question))) {
-            return new SimpleQuestionWrapper(question as SimpleQuestion);
-        } else if (isRight(QuestionPartDef.decode(question))) {
-            return new QuestionPartWrapper(question as QuestionPart);
-        } else {
-            throw new Error('Invalid question type');
+        for (const def of un) {
+            if (isRight(def.decode(question))) {
+                console.log("found ", def.name);
+                return new map[def.name](question as any);
+            }
         }
+        throw new Error('Could not find a Wrapper Class for ' + JSON.stringify(question));
     }
 }
 
