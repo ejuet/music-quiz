@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation, Outlet, useParams } from 'react-router-
 import { AudioFileList, ResetDBButton } from "../Database/DatabaseComponents.tsx";
 import { UploadSoundFile } from "./Media/DropZoneSound.tsx";
 import { useNavigateToTab } from "../index.js";
+import { Grid } from "./Grid/Grid.tsx";
 
 
 
@@ -14,7 +15,7 @@ export function QuizEditor() {
     // We need to define the tabs here because we need to check if the tabKey is valid later
     const tabs = [
         <Tab eventKey="grid" title="Grid" key="grid">
-            <p>quiz as grid</p>
+            <Grid />
         </Tab>,
         <Tab eventKey="media" title="Media" key="media">
             <h2>Audio Files</h2>
