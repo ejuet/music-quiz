@@ -127,4 +127,6 @@ appData.musicQuizzes = [
 ];
 
 console.log(isRight(SimpleQuestionDef.decode(appData.musicQuizzes[0].items[0]))); // true
-console.log(QuestionWrapperFactory.create(appData.musicQuizzes[0].items[0]).getParts());
+const parts = QuestionWrapperFactory.create(appData.musicQuizzes[0].items[0]).getParts()
+console.log(parts);
+console.log(isRight(DisplayableText.decode(parts[1])));
