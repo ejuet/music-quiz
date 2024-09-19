@@ -5,31 +5,45 @@ export class AppData {
     musicQuizzes: MusicQuiz[];
 }
 
-export class MusicQuiz {
+export interface MusicQuiz {
     id: string;
     name: string;
-    items: QuizItem[];
+    items: Question[];
 }
 
-export class QuizItem {
-    parts: QuizItemPart[];
-}
 
-export class QuizItemPart{
-}
+// Define the different types of "Question Parts"
+const SimpleTextDef = t.type({
+    text: t.string
+});
 
-export class Text extends QuizItemPart {
-    text: string;
-}
+const PlayableSongDef = t.type({
+    filename: t.string
+});
 
-export class PlayableSong extends QuizItemPart {
-    filename: string;
-}
+const RightOrWrongDef = t.type({
+    pointsIfRight: t.number,
+    pointsIfWrong: t.number
+});
 
-export class RightOrWrong extends QuizItemPart {
-    pointsIfRight: number;
-    pointsIfWrong: number;
-}
+const QuestionPartDef = t.union([SimpleTextDef, PlayableSongDef, RightOrWrongDef]);
+
+//Define the different types of "Questions"
+const QuestionWithPartsDef = t.type({
+    parts: t.array(QuestionPartDef)
+});
+
+const SimpleQuestionDef = t.type({
+    question: SimpleTextDef,
+    song: PlayableSongDef,
+    pointsIfRight: t.number,
+    answer: SimpleTextDef
+});
+
+const QuestionDef = t.union([QuestionWithPartsDef, SimpleQuestionDef, QuestionPartDef]);
+
+export type Question = t.TypeOf<typeof QuestionDef>;
+
 
 const appData = new AppData();
 appData.musicQuizzes = [
@@ -52,57 +66,22 @@ appData.musicQuizzes = [
                     {
                         text: 'Paris'
                     }
-                ] as QuizItemPart[]
+                ]
             }
         ]
     }
-] as MusicQuiz[];
+];
 
-function isInstance<T extends object>(obj: any, cls: new () => T): boolean {
-    const instance = new cls();
-    const instanceKeys = Object.keys(instance);
-    const objKeys = Object.keys(obj);
-
-
-    //for every key in the instance, check if the object has the same key and the same type
-    return instanceKeys.every(key => {
-        //if the object does not have the key, return false
-        if (!objKeys.includes(key)) {
-            return false;
-        }
-        const instanceValue = (instance as any)[key];
-        const objValue = (obj as any)[key];
-
-        console.log(instanceValue, objValue);
-
-        console.log(typeof instanceValue, typeof objValue);
-
-        if (typeof instanceValue === 'object' && instanceValue !== null) {
-            return isInstance(objValue, instanceValue.constructor as new () => any);
-        }
-
-        return typeof instanceValue === typeof objValue;
-    });
-}
-
-/*
-console.log(appData.musicQuizzes[0].items[0].parts[0])
-//console.log(isInstance(appData.musicQuizzes[0].items[0].parts[0], Text)); // What is the capital of France?
-const roW = {
-    pointsIfRight: 10,
-    pointsIfWrong: 123
-};
-console.log(isInstance(roW, RightOrWrong)); // false
-*/
 
 // To make it easier to define questions, we define templates. their attributes can be copied into the parts array
+/*
 export class SimpleQuestion {
-    question: Text;
+    question: SimpleText;
     song: PlayableSong;
     pointsIfRight: number;
-    answer: Text;
+    answer: SimpleText;
 
-    toQuizItem(): QuizItem {
+    toQuizItem(): Question {
         return {
             parts: [
                 this.question,
@@ -110,9 +89,10 @@ export class SimpleQuestion {
                 {
                     pointsIfRight: this.pointsIfRight,
                     pointsIfWrong: 0
-                },
+                } as RightOrWrong,
                 this.answer
             ]
         }
     }
 }
+    */
