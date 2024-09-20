@@ -21,27 +21,24 @@ const router = createHashRouter([
     element: <p>home</p>,
   },
   {
-    path: "/edit",
-    element: <QuizEditor />
-  },
-  {
-    path: "/edit/:tabKey",
-    element: <QuizEditor />
+    path: "quiz",
+    element: <ListQuizzes />,
   },
   {
     path: "/quiz/:quizID",
     element: <QuizPage />,
   },
   {
-    path: "quizzes",
-    element: <ListQuizzes />,
-  }
+    path: "quiz/:quizID/edit/:tabKey?",
+    element: <QuizEditor />,
+  },
 ]);
 
 //tab stuff
 export function useNavigateToTab() {
   const navigate = useNavigate();
-  return (tabKey) => navigate('/edit/' + tabKey);
+  const params = useParams();
+  return (tabKey) => navigate(`/quiz/${params.quizID}/edit/${tabKey}`);
 }
 
 root.render(
@@ -65,7 +62,8 @@ function ListQuizzes() {
 function QuizPage() {
   const currentQuiz = useCurrentQuiz();
   return <>
-    <p>name: "{currentQuiz?.name}"</p>
+    <h1>"{currentQuiz?.name}"</h1>
+    <Link to={`edit`}>Edit</Link>
   </>;
 }
 

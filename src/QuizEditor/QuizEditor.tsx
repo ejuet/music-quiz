@@ -25,14 +25,6 @@ export function QuizEditor() {
         </Tab>
     ]
 
-    // Navigate to first tab if tabKey is invalid
-    const tabIsValid = tabs.map(tab => tab.props.eventKey).includes(tabKey);
-    useEffect(() => {
-        if(!tabIsValid) {
-            navigate(tabs[0].props.eventKey);
-        }
-    }, [tabIsValid]);
-
     return <>
         <Tabs
             activeKey={tabKey}
