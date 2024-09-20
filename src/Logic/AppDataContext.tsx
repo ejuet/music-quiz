@@ -1,7 +1,7 @@
 // ---------- Save to Cache ----------
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { AppData, MusicQuiz } from "./structure.ts";
+import { AppData, MusicQuiz, Question } from "./structure.ts";
 import React from "react";
 import { useParams } from "react-router-dom";
 
@@ -9,8 +9,8 @@ function loadAppData(): AppData {
     const ret = localStorage.getItem("musicQuizAppData") ? JSON.parse(localStorage.getItem("musicQuizAppData")!) as AppData : new AppData();
     ret.musicQuizzes = [{
         id: "1",
-        name: "Quiz 1",
-        questions: [],
+        name: "Neues Quiz",
+        items: [],
     }]
     return ret;
 }

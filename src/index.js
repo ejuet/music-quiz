@@ -53,6 +53,7 @@ root.render(
 function ListQuizzes() {
   const d = useAppDataContext();
   return <div>
+    <h1>Quizzes</h1>
     {
       d.appData.musicQuizzes.map(q => <div key={q.id}>
         <Link to={`/quiz/${q.id}`}>{q.name}</Link>
