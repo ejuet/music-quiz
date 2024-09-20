@@ -10,7 +10,28 @@ function loadAppData(): AppData {
     ret.musicQuizzes = [{
         id: "1",
         name: "Neues Quiz",
-        items: [],
+        items: [
+            {
+                question: "What is the capital of France?",
+                song: {
+                    filename: 'Snowy Peaks pt II - Chris Haugen.mp3'
+                },
+                pointsIfRight: 10,
+                answer: {
+                    text: 'Paris'
+                }
+            },
+            {
+                question: "What is the capital of Germany?",
+                song: {
+                    filename: 'Snowy Peaks pt II - Chris Haugen.mp3'
+                },
+                pointsIfRight: 20,
+                answer: {
+                    text: 'Bonn'
+                }
+            }
+        ],
     }]
     return ret;
 }
