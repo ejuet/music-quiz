@@ -6,7 +6,8 @@ import * as t from 'io-ts';
 import { useAppDataContext, useCurrentQuiz } from "../../Logic/AppDataContext.tsx";
 import TextareaAutosize from 'react-textarea-autosize';
 import { getFilesFromIndexedDB } from "../../Logic/database.ts";
-import { useAudioFiles } from "../../Database/DatabaseComponents.tsx";
+import { PlayAudio, useAudioFiles } from "../../Database/DatabaseComponents.tsx";
+import { UploadSoundFile } from "../Media/DropZoneSound.tsx";
 
 export function EditQuestion({ question }: { question: Question }) {
     return <Card className="p-2">
@@ -37,23 +38,47 @@ function EditSong({ song, onChange }: { song: PlayableSong, onChange: (value: Pl
     const {setAppData, appData} = useAppDataContext();
     const currentQuiz = useCurrentQuiz();
     const audioFiles = useAudioFiles();
+    return <>
+        <ButtonGroup>
+        <Dropdown>
+            <Dropdown.Toggle id="dropdown-basic">
+                {song.filename!="" ? song.filename : "Select a song"}
+            </Dropdown.Toggle>
 
-    return <Dropdown>
-        <Dropdown.Toggle id="dropdown-basic">
-            {song.filename}
-        </Dropdown.Toggle>
-
-        <Dropdown.Menu>
-            {
-                audioFiles.map((file) => {
-                    return <Dropdown.Item key={file.name} onClick={() => {
+            <Dropdown.Menu>
+                <Dropdown.Item as="div">
+                    <UploadSoundFile onUpload={(file)=>{
                         onChange({ filename: file.name });
                         setAppData(appData);
-                    }}>{file.name}</Dropdown.Item>
-                })
-            }
-        </Dropdown.Menu>
-    </Dropdown>
+                    }} />
+                </Dropdown.Item>
+                {
+                    audioFiles.map((file) => {
+                        return <Dropdown.Item key={file.name} onClick={() => {
+                            onChange({ filename: file.name });
+                            setAppData(appData);
+                        }}>{file.name}</Dropdown.Item>
+                    })
+                }
+            </Dropdown.Menu>
+        </Dropdown>
+        {
+            song.filename !== "" &&
+            <Button variant="secondary" style={{maxWidth: '100px'}}
+            onClick={()=>{
+                onChange({ filename: '' });
+                setAppData(appData);
+            }}
+        >
+            Clear
+        </Button>
+        }
+        
+        </ButtonGroup>
+        
+        <PlayAudio filename={song.filename} />
+        
+    </> 
 }
 
 function DeleteQuestionButton({ question }: { question: any }) {

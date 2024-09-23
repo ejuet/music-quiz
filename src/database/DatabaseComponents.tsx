@@ -56,13 +56,15 @@ export function AudioFileList() {
     );
 }
 
-function AudioFile({ file }) {
+function AudioFile({ file } : { file: File }) {
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
     return <div className="card m-2" style={{ width: '25rem' }}>
         <div className="card-body">
             <h5 className="card-title">{file.name}</h5>
-            <audio controls src={URL.createObjectURL(file)} className="w-100" />
+            <div>
+                <PlayAudio filename={file.name} />
+            </div>
             <button
                 className="btn btn-danger mt-2"
                 onClick={() => setShowConfirmDialog(true)}
@@ -72,6 +74,22 @@ function AudioFile({ file }) {
             <ConfirmDelete file={file} show={showConfirmDialog} setShow={setShowConfirmDialog} />
         </div>
     </div>
+}
+
+export function PlayAudio({ filename } : { filename: string }) {
+    const [file, setFile] = useState<File>();
+    useEffect(() => {
+        const fetchFile = async () => {
+            const files = await getFilesFromIndexedDB("audioFiles");
+            const file = files.find((file) => file.name === filename);
+            setFile(file);
+        };
+        fetchFile();
+    }, [filename]);
+
+    if(!file) return <small>File not found</small>
+
+    return <audio controls src={URL.createObjectURL(file)} />
 }
 
 function ConfirmDelete({ file, show, setShow }) {
