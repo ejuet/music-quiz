@@ -43,6 +43,7 @@ export type QuestionPart = t.TypeOf<typeof QuestionPartDef>;
 
 // ---------- Define the "Question" type ----------
 
+// They all intersect with this basic definition:
 const BasicQuestionDef = t.type({
     category: t.string
 })
