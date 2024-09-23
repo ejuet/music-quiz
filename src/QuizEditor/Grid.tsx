@@ -3,7 +3,7 @@ import { Category, Question } from '../Logic/structure.ts';
 import { useAppDataContext, useCurrentQuiz } from '../Logic/AppDataContext.tsx';
 import { QuestionWrapperFactory } from '../Logic/QuestionWrapper.ts';
 import { Button, Table } from 'react-bootstrap';
-import { EditQuestion } from './QuestionEditor/EditQuestion.tsx';
+import { EditQuestion, EditText } from './QuestionEditor/EditQuestion.tsx';
 import { useState } from 'react';
 import { Modal } from 'react-bootstrap';
 
@@ -35,7 +35,7 @@ export function Grid(){
                             const questions = currentQuiz.items.filter((item) => item.category === category.id) as Question[];
                             return <tr key={category.id}>
                                 <td>
-                                    {category.name}
+                                    <EditText text={category.name} onChange={(value) => category.name = value}/>
                                     <br />
                                     <DeleteCategoryButton category={category}/>
                                 </td>

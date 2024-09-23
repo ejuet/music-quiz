@@ -33,7 +33,7 @@ function DeleteQuestionButton({ question }: { question: any }) {
     }} >Delete</Button>
 }
 
-function EditText({ text, onChange }: { text: DisplayableText, onChange: (value: string) => void }) {
+export function EditText({ text, onChange }: { text: DisplayableText, onChange: (value: string) => void }) {
     const {setAppData, appData} = useAppDataContext();
     const handleChange = (e) => {
         onChange(e.target.value);
