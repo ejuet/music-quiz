@@ -7,6 +7,7 @@ export const questionWrappers: { [key: string]: (question: any) => QuestionWrapp
 
 export interface QuestionWrapper<T extends Question = Question> {
     getParts(): QuestionPart[];
+    getPoints(): number;
 }
 
 export class QuestionWrapperFactory {

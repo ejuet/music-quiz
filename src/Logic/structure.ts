@@ -67,6 +67,15 @@ export class QuestionWithPartsWrapper implements QuestionWrapper {
     getParts(): QuestionPart[] {
         return this.question.parts;
     }
+
+    getPoints(): number {
+        return this.question.parts.reduce((acc, part) => {
+            if (RightOrWrongDef.is(part)) {
+                return acc + part.pointsIfRight;
+            }
+            return acc;
+        }, 0);
+    }
 }
 questionWrappers[QuestionWithPartsDef.name] = q => new QuestionWithPartsWrapper(q);
 
@@ -100,6 +109,10 @@ export class SimpleQuestionWrapper implements QuestionWrapper {
             this.question.answer
         ];
     }
+
+    getPoints(): number {
+        return this.question.pointsIfRight;
+    }
 }
 questionWrappers[SimpleQuestionDef.name] = q => new SimpleQuestionWrapper(q);
 
@@ -119,6 +132,13 @@ export class QuestionPartWrapper implements QuestionWrapper<OneQuestionPart> {
 
     getParts(): OneQuestionPart[] {
         return [this.question];
+    }
+
+    getPoints(): number {
+        if (RightOrWrongDef.is(this.question)) {
+            return this.question.pointsIfRight;
+        }
+        return 0;
     }
 }
 questionWrappers[QuestionPartDef.name] = question => new QuestionPartWrapper(question);
