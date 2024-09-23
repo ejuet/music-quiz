@@ -64,9 +64,13 @@ export function EditNumber({ number, onChange }: { number: number, onChange: (va
         }}
         onInput={(e) => {
             const inputValue = e.target.value.replace(/[^0-9]/g, '');
-            e.target.value = inputValue
+            e.target.value = inputValue;
         }}
-        style={{ appearance: 'textfield', MozAppearance: 'textfield' }}
+        style={{ 
+            appearance: 'textfield', 
+            MozAppearance: 'textfield', 
+            width: `${number.toString().length + 3 +2}ch` 
+        }}
     />
 }
 

@@ -76,7 +76,8 @@ function EditPoints({points}: {points: number}){
     const currentQuiz = useCurrentQuiz();
     const questionsWithPoints = currentQuiz?.items.filter((item) => QuestionWrapperFactory.create(item).getPoints() === points) as Question[];
 
-    return <EditNumber number={points} onChange={(value) => {
+    return <div style={{display: "inline-block"}}>
+    <EditNumber number={points} onChange={(value) => {
         questionsWithPoints.forEach((question) => {
             if(isRight(SimpleQuestionDef.decode(question))) {
                 const parsedQuestion = question as SimpleQuestion
@@ -86,6 +87,7 @@ function EditPoints({points}: {points: number}){
         });
         setAppData(appData);
     }}/>
+    </div>
 }
 
 function AddQuestionButton({ category, points=0 }: { category: Category, points?: number }) {
