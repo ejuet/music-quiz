@@ -22,9 +22,7 @@ export const ResetDBButton: React.FC = () => {
     );
 };
 
-
-
-export function AudioFileList() {
+export function useAudioFiles() {
     const [files, setFiles] = useState<File[]>([]);
 
     useEffect(() => {
@@ -40,6 +38,12 @@ export function AudioFileList() {
             document.removeEventListener('databaseChange', fetchFiles);
         };
     }, []);
+
+    return files;
+}
+
+export function AudioFileList() {
+    const files = useAudioFiles();
 
 
     return (

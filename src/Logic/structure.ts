@@ -25,6 +25,7 @@ export interface Category{
 export const PlayableSongDef = t.type({
     filename: t.string
 });
+export type PlayableSong = t.TypeOf<typeof PlayableSongDef>;
 
 export const RightOrWrongDef = t.type({
     pointsIfRight: t.number,
