@@ -11,6 +11,12 @@ export interface MusicQuiz {
     id: string;
     name: string;
     items: Question[];
+    categories: Category[];
+}
+
+export interface Category{
+    id: string;
+    name: string;
 }
 
 
@@ -35,10 +41,20 @@ const DisplayableText = t.union([SimpleTextDef, t.string]);
 const QuestionPartDef = t.union([SimpleTextDef, PlayableSongDef, RightOrWrongDef, DisplayableText]);
 export type QuestionPart = t.TypeOf<typeof QuestionPartDef>;
 
+// ---------- Define the "Question" type ----------
+
+const BasicQuestionDef = t.type({
+    category: t.string
+})
+
 // --- A question with multiple parts ---
-const QuestionWithPartsDef = t.type({
-    parts: t.array(QuestionPartDef)
-});
+const QuestionWithPartsDef = t.intersection([
+    BasicQuestionDef,
+    t.type({
+        parts: t.array(QuestionPartDef)
+    })
+]);
+
 export type QuestionWithParts = t.TypeOf<typeof QuestionWithPartsDef>;
 export class QuestionWithPartsWrapper implements QuestionWrapper {
     question: QuestionWithParts;
@@ -51,15 +67,19 @@ export class QuestionWithPartsWrapper implements QuestionWrapper {
         return this.question.parts;
     }
 }
-questionWrappers[QuestionWithPartsDef.name] = QuestionWithPartsWrapper;
+questionWrappers[QuestionWithPartsDef.name] = q => new QuestionWithPartsWrapper(q);
 
 // --- An ordinary music quiz question ---
-const SimpleQuestionDef = t.type({
-    question: DisplayableText,
-    song: PlayableSongDef,
-    pointsIfRight: t.number,
-    answer: DisplayableText
-});
+const SimpleQuestionDef = t.intersection([
+    BasicQuestionDef,
+    t.type({
+        question: DisplayableText,
+        song: PlayableSongDef,
+        pointsIfRight: t.number,
+        answer: SimpleTextDef
+    })
+]);
+
 export type SimpleQuestion = t.TypeOf<typeof SimpleQuestionDef>;
 export class SimpleQuestionWrapper implements QuestionWrapper {
     question: SimpleQuestion;
@@ -80,28 +100,34 @@ export class SimpleQuestionWrapper implements QuestionWrapper {
         ];
     }
 }
-questionWrappers[SimpleQuestionDef.name] = SimpleQuestionWrapper;
+questionWrappers[SimpleQuestionDef.name] = q => new SimpleQuestionWrapper(q);
 
 // --- An individual question part ---
-export class QuestionPartWrapper implements QuestionWrapper {
-    question: QuestionPart;
+const OneQuestionPartDef = t.intersection([
+    BasicQuestionDef,
+    QuestionPartDef
+]);
+export type OneQuestionPart = t.TypeOf<typeof OneQuestionPartDef>;
 
-    constructor(question: QuestionPart) {
+export class QuestionPartWrapper implements QuestionWrapper<OneQuestionPart> {
+    question: OneQuestionPart;
+
+    constructor(question: OneQuestionPart) {
         this.question = question;
     }
 
-    getParts(): QuestionPart[] {
+    getParts(): OneQuestionPart[] {
         return [this.question];
     }
 }
-questionWrappers[QuestionPartDef.name] = QuestionPartWrapper;
+questionWrappers[QuestionPartDef.name] = question => new QuestionPartWrapper(question);
 
 
-// ---------- Define the "Question" type ----------
 export const questionDefinitions = [QuestionWithPartsDef, SimpleQuestionDef, QuestionPartDef]  as [t.Mixed, t.Mixed, t.Mixed];
 const QuestionDef = t.union(questionDefinitions);
 
 export type Question = t.TypeOf<typeof QuestionDef>;
+//export type Question = QuestionWithParts | SimpleQuestion | OneQuestionPart;
 
 
 // ---------- Example usage ----------
@@ -111,8 +137,15 @@ appData.musicQuizzes = [
     {
         id: '1',
         name: 'Quiz 1',
+        categories: [
+            {
+                id: '1',
+                name: 'Category 1'
+            }
+        ],
         items: [
             {
+                category: '1',
                 question: "What is the capital of France?",
                 song: {
                     filename: 'song.mp3'

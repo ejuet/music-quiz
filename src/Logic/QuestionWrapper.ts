@@ -3,9 +3,9 @@ import { QuestionPart, Question, questionDefinitions } from "./structure.ts";
 
 // ---------- Utility ----------
 
-export const questionWrappers: { [key: string]: new (question: Question) => QuestionWrapper } = {};
+export const questionWrappers: { [key: string]: (question: any) => QuestionWrapper } = {};
 
-export interface QuestionWrapper {
+export interface QuestionWrapper<T extends Question = Question> {
     getParts(): QuestionPart[];
 }
 
@@ -14,7 +14,7 @@ export class QuestionWrapperFactory {
         for(const def of questionDefinitions) {
             if(isRight(def.decode(question))) {
                 console.log("found ", def.name);
-                return new questionWrappers[def.name](question as any);
+                return questionWrappers[def.name](question as any);
             }
         }
         throw new Error('Could not find a Wrapper Class for ' + JSON.stringify(question));
