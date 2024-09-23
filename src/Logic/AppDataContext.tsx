@@ -8,6 +8,7 @@ import { category } from "fp-ts";
 
 function loadAppData(): AppData {
     const ret = localStorage.getItem("musicQuizAppData") ? JSON.parse(localStorage.getItem("musicQuizAppData")!) as AppData : new AppData();
+    /*
     ret.musicQuizzes = [{
         id: "1",
         name: "Neues Quiz",
@@ -94,6 +95,7 @@ function loadAppData(): AppData {
             }
         ],
     }]
+    */
     return ret;
 }
 

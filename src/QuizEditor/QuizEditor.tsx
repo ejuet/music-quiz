@@ -4,7 +4,7 @@ import { Link, useNavigate, useLocation, Outlet, useParams } from 'react-router-
 import { AudioFileList, ResetDBButton } from "../Database/DatabaseComponents.tsx";
 import { UploadSoundFile } from "./Media/DropZoneSound.tsx";
 import { useNavigateToTab } from "../index.js";
-import { Grid } from "./Grid/Grid.tsx";
+import { Grid } from "./Grid.tsx";
 
 
 

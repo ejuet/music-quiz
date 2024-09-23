@@ -14,7 +14,6 @@ export class QuestionWrapperFactory {
     static create(question: Question): QuestionWrapper {
         for(const def of questionDefinitions) {
             if(isRight(def.decode(question))) {
-                console.log("found ", def.name);
                 return questionWrappers[def.name](question as any);
             }
         }

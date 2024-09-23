@@ -22,23 +22,24 @@ export interface Category{
 
 // ---------- Define the different types of "Question Parts" ----------
 
-const PlayableSongDef = t.type({
+export const PlayableSongDef = t.type({
     filename: t.string
 });
 
-const RightOrWrongDef = t.type({
+export const RightOrWrongDef = t.type({
     pointsIfRight: t.number,
     pointsIfWrong: t.number
 });
 
-const SimpleTextDef = t.type({
+export const SimpleTextDef = t.type({
     text: t.string
     //add other properties for displaying text here
 });
-const DisplayableText = t.union([SimpleTextDef, t.string]);
+
+const DisplayableTextDef = t.union([SimpleTextDef, t.string]);
 
 
-const QuestionPartDef = t.union([SimpleTextDef, PlayableSongDef, RightOrWrongDef, DisplayableText]);
+const QuestionPartDef = t.union([SimpleTextDef, PlayableSongDef, RightOrWrongDef, DisplayableTextDef]);
 export type QuestionPart = t.TypeOf<typeof QuestionPartDef>;
 
 // ---------- Define the "Question" type ----------
@@ -80,13 +81,13 @@ export class QuestionWithPartsWrapper implements QuestionWrapper {
 questionWrappers[QuestionWithPartsDef.name] = q => new QuestionWithPartsWrapper(q);
 
 // --- An ordinary music quiz question ---
-const SimpleQuestionDef = t.intersection([
+export const SimpleQuestionDef = t.intersection([
     BasicQuestionDef,
     t.type({
-        question: DisplayableText,
+        question: DisplayableTextDef,
         song: PlayableSongDef,
         pointsIfRight: t.number,
-        answer: SimpleTextDef
+        answer: DisplayableTextDef
     })
 ]);
 
