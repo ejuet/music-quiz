@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, ButtonGroup, Card, Dropdown, Form } from "react-bootstrap";
-import { DisplayableText, Question, RightOrWrong, SimpleQuestion, SimpleQuestionDef } from "../../Logic/structure.ts";
+import { Question, SimpleQuestion, SimpleQuestionDef } from "../../Logic/structure.ts";
 import { isRight } from "fp-ts/lib/Either";
 import * as t from 'io-ts';
 import { useAppDataContext, useCurrentQuiz } from "../../Logic/AppDataContext.tsx";
