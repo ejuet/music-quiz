@@ -1,26 +1,32 @@
 import React from "react";
 import { Button, ButtonGroup, Card, Dropdown, Form } from "react-bootstrap";
-import { DisplayableText, RightOrWrong, SimpleQuestion, SimpleQuestionDef } from "../../Logic/structure.ts";
+import { DisplayableText, Question, RightOrWrong, SimpleQuestion, SimpleQuestionDef } from "../../Logic/structure.ts";
 import { isRight } from "fp-ts/lib/Either";
 import * as t from 'io-ts';
 import { useAppDataContext, useCurrentQuiz } from "../../Logic/AppDataContext.tsx";
 import TextareaAutosize from 'react-textarea-autosize';
 
-export function EditQuestion({ question }: { question: any }) {
-    if(isRight(SimpleQuestionDef.decode(question))) {
-        const parsedQuestion = question as SimpleQuestion
-        return <Card className="p-2">
-                <Form.Label>Question</Form.Label>
-                <EditText text={parsedQuestion.question} onChange={(value) => parsedQuestion.question = value}/>
-                <Form.Label>Answer</Form.Label>
-                <EditText text={parsedQuestion.answer} onChange={(value) => parsedQuestion.answer = value}/>
-                <Form.Label>Points</Form.Label>
-                <EditNumber number={parsedQuestion.pointsIfRight} onChange={(value) => parsedQuestion.pointsIfRight = value}/>
-                <Form.Label>Category</Form.Label>
-                <EditCategory category={parsedQuestion.category} onChange={(value) => parsedQuestion.category = value}/>
-                <DeleteQuestionButton question={question}/>
-            </Card>
-    }
+export function EditQuestion({ question }: { question: Question }) {
+    return <Card className="p-2">
+        {
+            isRight(SimpleQuestionDef.decode(question)) &&
+            <SimpleQuestionEditor question={question} />
+        }
+        <Form.Label>Category</Form.Label>
+        <EditCategory category={question.category} onChange={(value) => question.category = value}/>
+        <DeleteQuestionButton question={question}/>
+    </Card>
+}
+
+function SimpleQuestionEditor({ question }: { question: SimpleQuestion }) {
+    return <>
+        <Form.Label>Question</Form.Label>
+        <EditText text={question.question} onChange={(value) => question.question = value}/>
+        <Form.Label>Answer</Form.Label>
+        <EditText text={question.answer} onChange={(value) => question.answer = value}/>
+        <Form.Label>Points</Form.Label>
+        <EditNumber number={question.pointsIfRight} onChange={(value) => question.pointsIfRight = value}/>
+    </>
 }
 
 function DeleteQuestionButton({ question }: { question: any }) {
