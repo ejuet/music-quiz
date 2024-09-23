@@ -43,7 +43,7 @@ export function Grid(){
                                 {
                                     allPoints.map((points) => {
                                         const questionsInColumn = questions.filter((question) => QuestionWrapperFactory.create(question).getPoints() === points);
-                                        return <td key={category.id+"-"+points}>
+                                        return <td key={category.id+"-"+points} style={{maxWidth: (1/allPoints.length)*60+"vw"}}>
                                             {
                                                 questionsInColumn.map((question, ind) => <EditQuestion key={category.id+"-"+points+"-"+ind} question={question}/>)
                                             }

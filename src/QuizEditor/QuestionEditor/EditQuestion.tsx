@@ -39,45 +39,50 @@ function EditSong({ song, onChange }: { song: PlayableSong, onChange: (value: Pl
     const currentQuiz = useCurrentQuiz();
     const audioFiles = useAudioFiles();
     return <>
-        <ButtonGroup>
-            <Dropdown>
-                <Dropdown.Toggle id="dropdown-basic">
-                    {song.filename != "" ? song.filename : "Select a song"}
-                </Dropdown.Toggle>
+        <Dropdown>
+            <Dropdown.Toggle id="dropdown-basic" style={{ width: "100%" }}>
+                {song.filename != "" ? song.filename : "Select a song"}
+            </Dropdown.Toggle>
 
-                <Dropdown.Menu>
-                    <Dropdown.Item as="div">
-                        <UploadSoundFile onUpload={(file) => {
+            <Dropdown.Menu>
+                <Dropdown.Item>
+                    {
+                        song.filename !== "" &&
+                        <Button variant="secondary" style={{ width: '100%' }}
+                            onClick={() => {
+                                onChange({ filename: '' });
+                                setAppData(appData);
+                            }}
+                        >
+                            Clear Selection
+                        </Button>
+                    }
+                </Dropdown.Item>
+
+                <Dropdown.Item as="div">
+                    <UploadSoundFile onUpload={(file) => {
+                        onChange({ filename: file.name });
+                        setAppData(appData);
+                    }} />
+                </Dropdown.Item>
+
+
+
+                {
+                    audioFiles.map((file) => {
+                        return <Dropdown.Item key={file.name} onClick={() => {
                             onChange({ filename: file.name });
                             setAppData(appData);
-                        }} />
-                    </Dropdown.Item>
-                    {
-                        audioFiles.map((file) => {
-                            return <Dropdown.Item key={file.name} onClick={() => {
-                                onChange({ filename: file.name });
-                                setAppData(appData);
-                            }}>{file.name}</Dropdown.Item>
-                        })
-                    }
-                </Dropdown.Menu>
-            </Dropdown>
-            {
-                song.filename !== "" &&
-                <Button variant="secondary" style={{ maxWidth: '100px' }}
-                    onClick={() => {
-                        onChange({ filename: '' });
-                        setAppData(appData);
-                    }}
-                >
-                    Clear
-                </Button>
-            }
-
-        </ButtonGroup>
-
-        <PlayAudio filename={song.filename} />
-
+                        }}>{file.name}</Dropdown.Item>
+                    })
+                }
+            </Dropdown.Menu>
+        </Dropdown>
+        
+        {
+            song.filename !== "" &&
+            <PlayAudio filename={song.filename} />
+        }
     </>
 }
 
