@@ -45,7 +45,7 @@ export function EditText({ text, onChange }: { text: DisplayableText, onChange: 
     return <TextareaAutosize className="form-control" value={textToEdit} onChange={handleChange}/>
 }
 
-function EditNumber({ number, onChange }: { number: number, onChange: (value: number) => void }) {
+export function EditNumber({ number, onChange }: { number: number, onChange: (value: number) => void }) {
     const {setAppData, appData} = useAppDataContext();
     const handleChange = (e) => {
         const value = parseInt(e.target.value);
@@ -54,7 +54,6 @@ function EditNumber({ number, onChange }: { number: number, onChange: (value: nu
     };
 
     return <input 
-        type="number" 
         className="form-control" 
         defaultValue={number} 
         onBlur={handleChange} 
@@ -63,6 +62,11 @@ function EditNumber({ number, onChange }: { number: number, onChange: (value: nu
                 handleChange(e);
             }
         }}
+        onInput={(e) => {
+            const inputValue = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = inputValue
+        }}
+        style={{ appearance: 'textfield', MozAppearance: 'textfield' }}
     />
 }
 

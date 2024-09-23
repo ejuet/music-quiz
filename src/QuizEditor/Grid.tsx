@@ -1,11 +1,12 @@
 import React from 'react';
-import { Category, Question } from '../Logic/structure.ts';
+import { Category, Question, SimpleQuestion, SimpleQuestionDef } from '../Logic/structure.ts';
 import { useAppDataContext, useCurrentQuiz } from '../Logic/AppDataContext.tsx';
 import { QuestionWrapperFactory } from '../Logic/QuestionWrapper.ts';
 import { Button, Table } from 'react-bootstrap';
-import { EditQuestion, EditText } from './QuestionEditor/EditQuestion.tsx';
+import { EditNumber, EditQuestion, EditText } from './QuestionEditor/EditQuestion.tsx';
 import { useState } from 'react';
 import { Modal } from 'react-bootstrap';
+import { isRight } from 'fp-ts/lib/Either';
 
 export function Grid(){
     const currentQuiz = useCurrentQuiz();
@@ -25,7 +26,7 @@ export function Grid(){
                     <tr>
                         <th>Category</th>
                         {
-                            allPoints.map((points) => <th key={points} >{points} Punkte</th>)
+                            allPoints.map((points) => <th key={points} >{<EditPoints points={points} />} Punkte</th>)
                         }
                     </tr>
                 </thead>
@@ -68,6 +69,23 @@ export function Grid(){
             </Table>
         </div>
     )
+}
+
+function EditPoints({points}: {points: number}){
+    const {setAppData, appData} = useAppDataContext();
+    const currentQuiz = useCurrentQuiz();
+    const questionsWithPoints = currentQuiz?.items.filter((item) => QuestionWrapperFactory.create(item).getPoints() === points) as Question[];
+
+    return <EditNumber number={points} onChange={(value) => {
+        questionsWithPoints.forEach((question) => {
+            if(isRight(SimpleQuestionDef.decode(question))) {
+                const parsedQuestion = question as SimpleQuestion
+                parsedQuestion.pointsIfRight = value;
+            }
+            //TODO handle other question types, possibly via QuestionWrapper
+        });
+        setAppData(appData);
+    }}/>
 }
 
 function AddQuestionButton({ category, points=0 }: { category: Category, points?: number }) {
