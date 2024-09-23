@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, ButtonGroup, Card, Dropdown, Form } from "react-bootstrap";
-import { Question, SimpleQuestion, SimpleQuestionDef } from "../../Logic/structure.ts";
+import { DisplayableText, Question, SimpleQuestion, SimpleQuestionDef } from "../../Logic/structure.ts";
 import { isRight } from "fp-ts/lib/Either";
 import * as t from 'io-ts';
 import { useAppDataContext, useCurrentQuiz } from "../../Logic/AppDataContext.tsx";
@@ -69,8 +69,8 @@ export function EditNumber({ number, onChange }: { number: number, onChange: (va
             }
         }}
         onInput={(e) => {
-            const inputValue = e.target.value.replace(/[^0-9]/g, '');
-            e.target.value = inputValue;
+            const inputValue = (e.target as HTMLInputElement).value.replace(/[^0-9]/g, '');
+            (e.target as HTMLInputElement).value = inputValue;
         }}
         style={{ 
             appearance: 'textfield', 

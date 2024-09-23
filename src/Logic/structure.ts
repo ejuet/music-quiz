@@ -37,6 +37,7 @@ export const SimpleTextDef = t.type({
 });
 
 const DisplayableTextDef = t.union([SimpleTextDef, t.string]);
+export type DisplayableText = t.TypeOf<typeof DisplayableTextDef>;
 
 
 const QuestionPartDef = t.union([SimpleTextDef, PlayableSongDef, RightOrWrongDef, DisplayableTextDef]);
