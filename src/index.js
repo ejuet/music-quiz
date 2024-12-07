@@ -13,7 +13,7 @@ import { AppDataProvider, useAppDataContext, useCurrentQuiz } from './Logic/AppD
 import { useAppData } from './Logic/AppDataContext.tsx';
 import { Link } from 'react-router-dom';
 import { Navbar, Nav } from 'react-bootstrap';
-import { AddQuiz } from './StartPage/AddQuiz.tsx';
+import { ListQuizzes } from './StartPage/ListQuizzes.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -89,18 +89,7 @@ function NavbarLink({ to, children, ...props }) {
     }} {...props}>{children}</Link>
 }
 
-function ListQuizzes() {
-  const d = useAppDataContext();
-  return <div>
-    <h1>Your Quizzes</h1>
-    {
-      d.appData.musicQuizzes.map(q => <div key={q.id}>
-        <Link to={`/quiz/${q.id}`}>{q.name}</Link>
-      </div>)
-    }
-    <AddQuiz />
-  </div>
-}
+
 
 function QuizPage() {
   const currentQuiz = useCurrentQuiz();

@@ -16,6 +16,10 @@ export class AppData {
         this.musicQuizzes.push(quiz);
         return quiz;
     }
+
+    deleteMusicQuiz(id: string) {
+        this.musicQuizzes = this.musicQuizzes.filter(quiz => quiz.id !== id);
+    }
 }
 
 export interface MusicQuiz {
