@@ -32,7 +32,7 @@ const router = createHashRouter([
   },
   {
     path: "quiz/:quizID/edit/:tabKey?",
-    element: <QuizEditor />,
+    element: <WithNavbar><WithQuizNavbar><QuizEditor /></WithQuizNavbar></WithNavbar>,
   },
 ]);
 
@@ -74,6 +74,20 @@ function WithNavbar({ children }) {
             </Nav>
           </Navbar.Collapse>
         </Navbar>
+      </div>
+      {children}
+    </>
+  );
+}
+
+function WithQuizNavbar({ children }) {
+  const currentQuiz = useCurrentQuiz();
+  
+  return (
+    <>
+      <div className='mx-4 d-flex justify-content-between align-items-center'>
+        <Button variant="link" href={"/#/quiz/" + currentQuiz?.id}>Back</Button>
+        <h2 className='text-center flex-grow-1'>Edit <b>{currentQuiz?.name}</b></h2>
       </div>
       {children}
     </>
