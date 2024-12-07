@@ -18,11 +18,11 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 const router = createHashRouter([
   {
     path: "/",
-    element: <p>home</p>,
+    element: <StartPage />,
   },
   {
     path: "quiz",
-    element: <ListQuizzes />,
+    element: <StartPage />,
   },
   {
     path: "/quiz/:quizID",
@@ -47,10 +47,17 @@ root.render(
     </AppDataProvider>
 );
 
+function StartPage(){
+  return <div>
+    <h1>Home</h1>
+    <h2>Your Quizzes</h2>
+    <ListQuizzes />
+  </div>
+}
+
 function ListQuizzes() {
   const d = useAppDataContext();
   return <div>
-    <h1>Quizzes</h1>
     {
       d.appData.musicQuizzes.map(q => <div key={q.id}>
         <Link to={`/quiz/${q.id}`}>{q.name}</Link>
