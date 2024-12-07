@@ -23,7 +23,7 @@ const router = createHashRouter([
   },
   {
     path: "quiz",
-    element: <StartPage />,
+    element: <WithNavbar><ListQuizzes /></WithNavbar>,
   },
   {
     path: "/quiz/:quizID",
@@ -51,8 +51,9 @@ root.render(
 function StartPage(){
   return <div>
     <h1>Home</h1>
-    <h2>Your Quizzes</h2>
-    <ListQuizzes />
+    <p>
+      Welcome to the music quiz app. Here you can create and play music quizzes.
+    </p>
   </div>
 }
 
@@ -63,11 +64,12 @@ function WithNavbar({ children }) {
     <>
       <div className='mx-4'>
         <Navbar expand="lg">
-          <Navbar.Brand href="/">Music Quiz</Navbar.Brand>
+          <Navbar.Brand href="/#/">Music Quiz</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
-              <NavbarLink to="/">Home</NavbarLink>
+              <NavbarLink to="/" className="mx-2">Home</NavbarLink>
+              <NavbarLink to="/quiz" className="mx-2">Quizzes</NavbarLink>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
@@ -77,18 +79,19 @@ function WithNavbar({ children }) {
   );
 }
 
-function NavbarLink({ to, children }) {
+function NavbarLink({ to, children, ...props }) {
   const location = useLocation();
   return <Link to={to} style={{
     color: location.pathname === to ? 'black' : 'inherit',
     fontWeight: location.pathname === to ? 'bold' : 'normal',
     textDecoration: 'none'
-    }}>{children}</Link>
+    }} {...props}>{children}</Link>
 }
 
 function ListQuizzes() {
   const d = useAppDataContext();
   return <div>
+    <h1>Your Quizzes</h1>
     {
       d.appData.musicQuizzes.map(q => <div key={q.id}>
         <Link to={`/quiz/${q.id}`}>{q.name}</Link>
@@ -100,7 +103,7 @@ function ListQuizzes() {
 function QuizPage() {
   const currentQuiz = useCurrentQuiz();
   return <>
-    <h1>"{currentQuiz?.name}"</h1>
+    <h1>Quiz "{currentQuiz?.name}"</h1>
     <Link to={`edit`}>Edit</Link>
   </>;
 }
