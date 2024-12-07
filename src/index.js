@@ -13,6 +13,7 @@ import { AppDataProvider, useAppDataContext, useCurrentQuiz } from './Logic/AppD
 import { useAppData } from './Logic/AppDataContext.tsx';
 import { Link } from 'react-router-dom';
 import { Navbar, Nav } from 'react-bootstrap';
+import { AddQuiz } from './StartPage/AddQuiz.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -97,6 +98,7 @@ function ListQuizzes() {
         <Link to={`/quiz/${q.id}`}>{q.name}</Link>
       </div>)
     }
+    <AddQuiz />
   </div>
 }
 

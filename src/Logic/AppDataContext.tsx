@@ -96,6 +96,8 @@ function loadAppData(): AppData {
         ],
     }]
     */
+
+    Object.setPrototypeOf(ret, AppData.prototype);
     return ret;
 }
 

@@ -5,6 +5,17 @@ import { questionWrappers, QuestionWrapper, QuestionWrapperFactory } from './Que
 
 export class AppData {
     musicQuizzes: MusicQuiz[];
+
+    createMusicQuiz(): MusicQuiz {
+        const quiz: MusicQuiz = {
+            id: Math.floor(Math.random() * 1000000).toString(),
+            name: "New Quiz",
+            items: [],
+            categories: []
+        };
+        this.musicQuizzes.push(quiz);
+        return quiz;
+    }
 }
 
 export interface MusicQuiz {
