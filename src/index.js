@@ -12,13 +12,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { AppDataProvider, useAppDataContext, useCurrentQuiz } from './Logic/AppDataContext.tsx';
 import { useAppData } from './Logic/AppDataContext.tsx';
 import { Link } from 'react-router-dom';
+import { Navbar, Nav } from 'react-bootstrap';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 const router = createHashRouter([
   {
     path: "/",
-    element: <StartPage />,
+    element: <WithNavbar><StartPage /></WithNavbar>,
   },
   {
     path: "quiz",
@@ -26,7 +27,7 @@ const router = createHashRouter([
   },
   {
     path: "/quiz/:quizID",
-    element: <QuizPage />,
+    element: <WithNavbar><QuizPage /></WithNavbar>,
   },
   {
     path: "quiz/:quizID/edit/:tabKey?",
@@ -53,6 +54,36 @@ function StartPage(){
     <h2>Your Quizzes</h2>
     <ListQuizzes />
   </div>
+}
+
+function WithNavbar({ children }) {
+  const location = useLocation();
+
+  return (
+    <>
+      <div className='mx-4'>
+        <Navbar expand="lg">
+          <Navbar.Brand href="/">Music Quiz</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="mr-auto">
+              <NavbarLink to="/">Home</NavbarLink>
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
+      </div>
+      {children}
+    </>
+  );
+}
+
+function NavbarLink({ to, children }) {
+  const location = useLocation();
+  return <Link to={to} style={{
+    color: location.pathname === to ? 'black' : 'inherit',
+    fontWeight: location.pathname === to ? 'bold' : 'normal',
+    textDecoration: 'none'
+    }}>{children}</Link>
 }
 
 function ListQuizzes() {
