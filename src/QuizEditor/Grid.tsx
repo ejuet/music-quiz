@@ -21,10 +21,6 @@ export function Grid(){
 
     return (
         <div>
-            <Button onClick={()=>{
-                setAppData(appData)
-            }} >Save</Button>
-            <h1>Grid</h1>
             <Table>
                 <thead>
                     <tr>
