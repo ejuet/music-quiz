@@ -5,7 +5,7 @@ import { AppData, MultiQuestion, MusicQuiz, Question, SimpleQuestion, SimpleQues
 import React from "react";
 import { useParams } from "react-router-dom";
 import { category } from "fp-ts";
-import { SaveGame } from "./gameStructure.ts";
+import { AnswerQuestion, SaveGame, SelectAndAnswerQuestion, SelectQuestion } from "./gameStructure.ts";
 
 function loadAppData(): AppData {
     const ret = localStorage.getItem("musicQuizAppData") ? JSON.parse(localStorage.getItem("musicQuizAppData")!) as AppData : new AppData();
@@ -119,6 +119,18 @@ function loadAppData(): AppData {
                 });
             }
         });
+    });
+
+    ret.saveGames.forEach((game) => {
+        Object.setPrototypeOf(game, SaveGame.prototype);
+        game.created = new Date(game.created);
+        game.gameActions.forEach((action) => {
+            if(action.actionType === "SelectAndAnswerQuestion"){
+                Object.setPrototypeOf(action, SelectAndAnswerQuestion.prototype);
+                Object.setPrototypeOf((action as SelectAndAnswerQuestion).selectQuestion, SelectQuestion.prototype);
+                Object.setPrototypeOf((action as SelectAndAnswerQuestion).answerQuestion, AnswerQuestion.prototype);
+            }
+        })
     });
 
     return ret;

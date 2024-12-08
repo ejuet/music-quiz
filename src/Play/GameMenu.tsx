@@ -1,9 +1,10 @@
 import React from "react";
 import { useAppDataContext, useCurrentGame } from "../Logic/AppDataContext.tsx";
-import { Button, Form, ListGroup } from "react-bootstrap";
+import { Button, ButtonGroup, Form, ListGroup } from "react-bootstrap";
 import { formatMyDate } from "../Common/formatDate.ts";
-import { Player } from "../Logic/gameStructure.ts";
+import { Player, Team } from "../Logic/gameStructure.ts";
 import DeleteButton from "../Common/DeleteButton.tsx";
+import { Link } from "react-router-dom";
 
 export function GameMenu() {
     const currentGame = useCurrentGame();
@@ -24,6 +25,14 @@ export function GameMenu() {
         </p>
         <h2>Teams</h2>
         <Teams />
+        <ButtonGroup>
+            <Button as={Link as any} to={`/quiz/${currentGame.quizId}/game/${currentGame.saveId}/play`}>Play</Button>
+            <Button as={Link as any} to={`/quiz/${currentGame.quizId}/game/${currentGame.saveId}/history`}>Show History</Button>
+            <DeleteButton onDelete={() => {
+                appData.saveGames = appData.saveGames.filter(g => g.saveId !== currentGame.saveId);
+                setAppData(appData);
+            }} customMessage={"Do you really want to delete save "+currentGame.name+"?"} />
+        </ButtonGroup>
     </>
 }
 
@@ -37,18 +46,19 @@ function Teams() {
         <ListGroup>
             {currentGame.teams.map(team => (
                 <ListGroup.Item key={team.id} className="mb-4">
-                    <Team teamId={team.id} />
+                    <TeamComponent teamId={team.id} />
                 </ListGroup.Item>
             ))}
         </ListGroup>
         <Button onClick={() => {
-            currentGame.teams.push({ name: "", id: Math.random().toString(), players: [], gameActions: [] });
+            const newTeam = new Team();
+            currentGame.teams.push(newTeam);
             setAppData(appData);
         }}>New Team</Button>
     </>
 }
 
-function Team({ teamId }: { teamId: string }) {
+function TeamComponent({ teamId }: { teamId: string }) {
     const currentGame = useCurrentGame();
     const { appData, setAppData } = useAppDataContext();
     if(!currentGame) {

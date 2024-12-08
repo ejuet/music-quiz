@@ -17,6 +17,7 @@ import { ListQuizzes } from './StartPage/ListQuizzes.tsx';
 import { QuizPage } from './QuizPage/QuizPage.tsx';
 import { Alert } from 'react-bootstrap';
 import { GameMenu } from './Play/GameMenu.tsx';
+import { GameHistory, PlayGame } from './Play/PlayGame.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -41,6 +42,14 @@ const router = createHashRouter([
     path: "quiz/:quizID/game/:gameID",
     element: <WithNavbar><GameMenu/></WithNavbar>,
   },
+  {
+    path: "quiz/:quizID/game/:gameID/play",
+    element: <WithNavbar><PlayGame/></WithNavbar>,
+  },
+  {
+    path: "quiz/:quizID/game/:gameID/history",
+    element: <WithNavbar><GameHistory/></WithNavbar>,
+  }
 ]);
 
 //tab stuff
