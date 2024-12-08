@@ -1,11 +1,13 @@
 import React from 'react';
-import { Category, Question, SimpleQuestion } from '../Logic/structure.ts';
+import { Category, MultiQuestion, Question, questionTypes, SimpleQuestion } from '../Logic/structure.ts';
 import { useAppDataContext, useCurrentQuiz } from '../Logic/AppDataContext.tsx';
 import { Button, Table } from 'react-bootstrap';
 import { EditNumber, EditQuestion, EditText } from './QuestionEditor/EditQuestion.tsx';
 import { useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { isRight } from 'fp-ts/lib/Either';
+import { Dropdown } from 'react-bootstrap';
+
 
 export function Grid(){
     const currentQuiz = useCurrentQuiz();
@@ -50,13 +52,13 @@ export function Grid(){
                                             }
                                             {
                                                 questionsInColumn.length === 0 &&
-                                                <AddQuestionButton category={category} points={points}/>
+                                                <AddQuestionOfTypeButton category={category} points={points}/>
                                             }
                                         </td>
                                     })
                                 }
                                 <td>
-                                    <AddQuestionButton category={category}/>
+                                    <AddQuestionOfTypeButton category={category}/>
                                 </td>
                             </tr>
                         })
@@ -80,9 +82,16 @@ function EditPoints({points}: {points: number}){
     return <div style={{display: "inline-block"}}>
     <EditNumber number={points} onChange={(value) => {
         questionsWithPoints.forEach((question) => {
-            if(true) {
+            if(question.questionType === "SimpleQuestion"){
                 const parsedQuestion = question as SimpleQuestion
-                parsedQuestion.pointsIfRight = value;
+                parsedQuestion.content.pointsIfRight = value;
+            }
+            else if(question.questionType === "MultiQuestion"){
+                const parsedQuestion = question as MultiQuestion
+                parsedQuestion.setPoints(value);
+            }
+            else{
+                console.log("Unsupported question type: "+question.questionType)
             }
             //TODO handle other question types, possibly via QuestionWrapper
         });
@@ -100,10 +109,44 @@ function AddQuestionButton({ category, points=0 }: { category: Category, points?
     onClick={() => {
         const newQuestion = new SimpleQuestion();
         newQuestion.category = category.id;
-        newQuestion.pointsIfRight = points? points : currentQuiz!.items.reduce((acc, item) => Math.max(acc, item.getPoints()), 0) + 10;
+        newQuestion.content.pointsIfRight = points? points : currentQuiz!.items.reduce((acc, item) => Math.max(acc, item.getPoints()), 0) + 10;
         currentQuiz!.items.push(newQuestion);
         setAppData(appData);
     }} >+</Button>
+}
+
+function AddQuestionOfTypeButton({ category, points=0 }: { category: Category, points?: number }) {
+    const availableTypes = questionTypes
+    const [showDropdown, setShowDropdown] = useState(false);
+    const currentQuiz = useCurrentQuiz();
+    const { setAppData, appData } = useAppDataContext();
+
+    return (
+        <>
+            <Button variant="primary" style={{ width: '100%' }} onClick={() => setShowDropdown(!showDropdown)}>
+                +
+            </Button>
+            {showDropdown && (
+                <Dropdown.Menu show>
+                    {availableTypes.map((type) => (
+                        <Dropdown.Item
+                            key={type.name}
+                            onClick={() => {
+                                const newQuestion = new type();
+                                newQuestion.category = category.id;
+                                newQuestion.setPoints(points? points : currentQuiz!.items.reduce((acc, item) => Math.max(acc, item.getPoints()), 0) + 10);
+                                currentQuiz!.items.push(newQuestion);
+                                setAppData(appData);
+                                setShowDropdown(false);
+                            }}
+                        >
+                            {type.name}
+                        </Dropdown.Item>
+                    ))}
+                </Dropdown.Menu>
+            )}
+        </>
+    );
 }
 
 function AddCategoryButton(){

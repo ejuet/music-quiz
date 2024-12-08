@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, ButtonGroup, Card, Dropdown, Form } from "react-bootstrap";
-import { DisplayableText, PlayableSong, Question, SimpleQuestion } from "../../Logic/structure.ts";
+import { DisplayableText, MultiQuestion, PlayableSong, Question, SimpleQuestion, SimpleQuestionContent } from "../../Logic/structure.ts";
 import { isRight } from "fp-ts/lib/Either";
 import * as t from 'io-ts';
 import { useAppDataContext, useCurrentQuiz } from "../../Logic/AppDataContext.tsx";
@@ -14,7 +14,11 @@ export function EditQuestion({ question }: { question: Question }) {
         <small>Type: {question.questionType}</small>
         {
             question.questionType === 'SimpleQuestion' &&
-            <SimpleQuestionEditor question={question as SimpleQuestion} />
+            <SimpleQuestionEditor question={(question as SimpleQuestion).content} />
+        }
+        {
+            question.questionType === 'MultiQuestion' &&
+            <MultiQuestionEditor question={(question as MultiQuestion)} />
         }
         <Form.Label>Category</Form.Label>
         <EditCategory category={question.category} onChange={(value) => question.category = value} />
@@ -22,7 +26,33 @@ export function EditQuestion({ question }: { question: Question }) {
     </Card>
 }
 
-function SimpleQuestionEditor({ question }: { question: SimpleQuestion }) {
+function MultiQuestionEditor({ question }: { question: MultiQuestion }) {
+
+    const { setAppData, appData } = useAppDataContext();
+    return <>
+        {
+            question.content.map((simpleQuestion, index) => {
+                return <div key={index} className="border p-2 mt-2">
+                    <SimpleQuestionEditor question={simpleQuestion} />
+                    <ButtonGroup>
+                        <Button onClick={() => {
+                            question.content = question.content.filter((item) => item !== simpleQuestion);
+                            setAppData(appData);
+                        }}>Delete</Button>
+                    </ButtonGroup>
+                </div>
+            })
+        }
+        <ButtonGroup>
+            <Button onClick={() => {
+                question.content.push(new SimpleQuestionContent());
+                setAppData(appData);
+            }}>Add Question</Button>
+        </ButtonGroup>
+    </>
+}
+
+function SimpleQuestionEditor({ question }: { question: SimpleQuestionContent }) {
     return <>
         <Form.Label>Question</Form.Label>
         <EditText text={question.question} onChange={(value) => question.question = value} />

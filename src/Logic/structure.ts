@@ -68,11 +68,14 @@ export type QuestionPart = SimpleText | PlayableSong | RightOrWrong | Displayabl
 
 // ---------- Define the "Question" type ----------
 
-export abstract class Question{
-    abstract category: string;
-    abstract questionType: string;
+export abstract class QuestionContent{
     abstract getParts(): QuestionPart[];
     abstract getPoints(): number;
+    abstract setPoints(points: number): void; // This is used for moving the question from one column to another
+}
+export abstract class Question extends QuestionContent {
+    abstract category: string;
+    abstract questionType: string;
 }
 
 // They all intersect with this basic definition:
@@ -82,8 +85,7 @@ export abstract class BasicQuestion extends Question {
 
 
 // --- An ordinary music quiz question ---
-export class SimpleQuestion extends BasicQuestion {
-    questionType: string = "SimpleQuestion";
+export class SimpleQuestionContent extends QuestionContent {
     question: DisplayableText;
     song: PlayableSong;
     pointsIfRight: number;
@@ -93,7 +95,7 @@ export class SimpleQuestion extends BasicQuestion {
         super();
         this.question = { text: "" };
         this.song = { filename: "" };
-        this.pointsIfRight = 0;
+        this.pointsIfRight = 10; //this cant be 0 because at some point this would get serialized as null and throws errors
         this.answer = { text: "" };
     }
 
@@ -104,7 +106,61 @@ export class SimpleQuestion extends BasicQuestion {
     getParts(): QuestionPart[] {
         return [this.question, this.song, { pointsIfRight: this.pointsIfRight, pointsIfWrong: 0 }, this.answer];
     }
+
+    setPoints(points: number) {
+        this.pointsIfRight = points;
+    }
 }
+
+export class SimpleQuestion extends BasicQuestion {
+    questionType: string = "SimpleQuestion";
+    content: SimpleQuestionContent;
+
+    constructor() {
+        super();
+        this.content = new SimpleQuestionContent();
+    }
+
+    getPoints(): number {
+        return this.content.getPoints();
+    }
+
+    getParts(): QuestionPart[] {
+        return this.content.getParts();
+    }
+
+    setPoints(points: number) {
+        this.content.setPoints(points);
+    }
+}
+
+export class MultiQuestion extends BasicQuestion {
+    content: SimpleQuestionContent[]
+    questionType: string = "MultiQuestion";
+
+    constructor() {
+        super();
+        const x = new SimpleQuestionContent();
+        //x.pointsIfRight = 10;
+        this.content = [x];
+    }
+
+    getPoints(): number {
+        return this.content.reduce((acc, question) => acc + question.getPoints(), 0);
+    }
+
+    getParts(): QuestionPart[] {
+        return this.content.flatMap(question => question.getParts());
+    }
+
+    setPoints(points: number) {
+        const totalPoints = this.getPoints();
+        const factor = points / totalPoints;
+        this.content.forEach(question => question.setPoints(question.getPoints() * factor));
+    }
+}
+
+export const questionTypes = [SimpleQuestion, MultiQuestion];
 
 //export type Question = QuestionWithParts | SimpleQuestion | OneQuestionPart;
 
@@ -125,13 +181,11 @@ appData.musicQuizzes = [
         items: [
             {
                 category: '1',
-                question: "What is the capital of France?",
-                song: {
-                    filename: 'song.mp3'
-                },
-                pointsIfRight: 10,
-                answer: {
-                    text: 'Paris'
+                content: {
+                    question: { text: 'What is the capital of France?' },
+                    song: { filename: 'Snowy Peaks pt II - Chris Haugen.mp3' },
+                    pointsIfRight: 10,
+                    answer: { text: 'Paris' }
                 }
             }  as SimpleQuestion
         ]

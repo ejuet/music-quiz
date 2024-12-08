@@ -1,7 +1,7 @@
 // ---------- Save to Cache ----------
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { AppData, MusicQuiz, Question, SimpleQuestion } from "./structure.ts";
+import { AppData, MultiQuestion, MusicQuiz, Question, SimpleQuestion, SimpleQuestionContent } from "./structure.ts";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { category } from "fp-ts";
@@ -104,6 +104,15 @@ function loadAppData(): AppData {
         quiz.items.forEach((item) => {
             if(item.questionType === "SimpleQuestion"){
                 Object.setPrototypeOf(item, SimpleQuestion.prototype);
+                const parsedItem = item as SimpleQuestion;
+                Object.setPrototypeOf(parsedItem.content, SimpleQuestionContent.prototype);
+            }
+            else if (item.questionType === "MultiQuestion"){
+                Object.setPrototypeOf(item, MultiQuestion.prototype);
+                const parsedItem = item as MultiQuestion;
+                parsedItem.content.forEach((content) => {
+                    Object.setPrototypeOf(content, SimpleQuestionContent.prototype);
+                });
             }
         });
     });
