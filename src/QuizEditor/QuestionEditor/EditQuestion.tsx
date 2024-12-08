@@ -8,6 +8,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { getFilesFromIndexedDB } from "../../Logic/database.ts";
 import { PlayAudio, useAudioFiles } from "../../Database/DatabaseComponents.tsx";
 import { UploadSoundFile } from "../Media/DropZoneSound.tsx";
+import DeleteButton from "../../Common/DeleteButton.tsx";
 
 export function EditQuestion({ question }: { question: Question }) {
     return <Card className="p-2">
@@ -35,10 +36,10 @@ function MultiQuestionEditor({ question }: { question: MultiQuestion }) {
                 return <div key={index} className="border p-2 mt-2">
                     <SimpleQuestionEditor question={simpleQuestion} />
                     <ButtonGroup>
-                        <Button onClick={() => {
+                        <DeleteButton onDelete={() => {
                             question.content = question.content.filter((item) => item !== simpleQuestion);
                             setAppData(appData);
-                        }}>Delete</Button>
+                        }} customMessage={"Are you sure you want to delete this question from the multi question?"} />
                     </ButtonGroup>
                 </div>
             })
@@ -117,14 +118,14 @@ function EditSong({ song, onChange }: { song: PlayableSong, onChange: (value: Pl
     </>
 }
 
-function DeleteQuestionButton({ question }: { question: any }) {
+function DeleteQuestionButton({ question }: { question: Question }) {
     const { setAppData, appData } = useAppDataContext();
     const currentQuiz = useCurrentQuiz();
 
-    return <Button variant="danger" className="mt-1" onClick={() => {
+    return <DeleteButton onDelete={() => {
         currentQuiz!.items = currentQuiz!.items.filter((item) => item !== question);
         setAppData(appData);
-    }} >Delete</Button>
+    }} customMessage={"Are you sure you want to delete this question?"} />
 }
 
 export function EditText({ text, onChange }: { text: DisplayableText, onChange: (value: string) => void }) {

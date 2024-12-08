@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { isRight } from 'fp-ts/lib/Either';
 import { Dropdown } from 'react-bootstrap';
+import DeleteButton from '../Common/DeleteButton.tsx';
 
 
 export function Grid(){
@@ -41,7 +42,11 @@ export function Grid(){
                                 <td>
                                     <EditText text={category.name} onChange={(value) => category.name = value}/>
                                     <br />
-                                    <DeleteCategoryButton category={category}/>
+                                    <DeleteButton onDelete={() => {
+                                        currentQuiz.categories = currentQuiz.categories.filter((cat) => cat !== category);
+                                        currentQuiz.items = currentQuiz.items.filter((item) => item.category !== category.id);
+                                        setAppData(appData);
+                                    }} customMessage={'Are you sure you want to delete the category "'+category.name+'"?'} />
                                 </td>
                                 {
                                     allPoints.map((points) => {
@@ -162,41 +167,4 @@ function AddCategoryButton(){
         });
         setAppData(appData);
     }} >Add Category</Button>
-}
-
-
-function DeleteCategoryButton({ category }: { category: Category }) {
-    const currentQuiz = useCurrentQuiz();
-    const { setAppData, appData } = useAppDataContext();
-    const [showModal, setShowModal] = useState(false);
-
-    const handleDelete = () => {
-        currentQuiz!.categories = currentQuiz!.categories.filter((cat) => cat !== category);
-        currentQuiz!.items = currentQuiz!.items.filter((item) => item.category !== category.id);
-        setAppData(appData);
-        setShowModal(false);
-    };
-
-    return (
-        <>
-            <Button variant="danger" className="mt-1" onClick={() => setShowModal(true)}>
-                Delete
-            </Button>
-
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Confirm Delete</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Are you sure you want to delete the category "{category.name}"?</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowModal(false)}>
-                        Cancel
-                    </Button>
-                    <Button variant="danger" onClick={handleDelete}>
-                        Delete
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </>
-    );
 }
