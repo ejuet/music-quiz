@@ -193,6 +193,8 @@ export class SelectAndAnswerQuestion extends CompositeGameAction {
         this.selectQuestion.teamId = this.teamId;
         this.answerQuestion.teamId = this.teamId;
 
+        //TODO create a setter for questionID in the answer question. if we set it, have multiple points fields for each individual question in multiquestion
+
         return [this.selectQuestion, this.answerQuestion];
     }
 }
