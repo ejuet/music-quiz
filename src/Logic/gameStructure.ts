@@ -18,22 +18,12 @@ export class SaveGame {
     }
 
     startGame(quiz: MusicQuiz) {
-        this.gameActions = [];
-        
-        new Array(quiz.items.length).fill(0).forEach((_, i) => {
-            const currentTeam = this.teams[i % this.teams.length];
-            const n = new SelectAndAnswerQuestion()
-            n.teamId = currentTeam.id;
-            this.gameActions.push(n);
-        });
+        this.gameActions = [new PlayGame(quiz, this.teams)];
     }
 
     getLeafActions() {
         return this.gameActions.map(a => {
-            if ((a as CompositeGameAction).actions) {
-                return (a as CompositeGameAction).actions;
-            }
-            return [a];
+            return a.getLeafActions();
         }).flat();
     }
 
@@ -100,15 +90,22 @@ export class AnswerQuestion extends QuestionAction {
 export abstract class GameAction {
     abstract get finished(): boolean;
     abstract actionType: string;
+    abstract getLeafActions(): GameAction[];
 }
 
 abstract class LeafGameAction extends GameAction {
+    getLeafActions() {
+        return [this];
+    }
 }
 
 abstract class CompositeGameAction extends GameAction {
     abstract get actions(): GameAction[];
     get finished() {
         return this.actions.every(a => a.finished);
+    }
+    getLeafActions() {
+        return this.actions.flatMap(a => a.getLeafActions());
     }
 }
 
@@ -119,6 +116,21 @@ export class ChangePoints extends LeafGameAction {
     finished: boolean = true; //this action is always finished because it is only used for calculating the score
     constructor() {
         super();
+    }
+}
+
+export class PlayGame extends CompositeGameAction {
+    actionType = "PlayGame";
+    actions: GameAction[] = [];
+    constructor(quiz: MusicQuiz, teams: Team[]) {
+        super();
+
+        new Array(quiz.items.length).fill(0).forEach((_, i) => {
+            const currentTeam = teams[i % teams.length];
+            const n = new SelectAndAnswerQuestion()
+            n.teamId = currentTeam.id;
+            this.actions.push(n);
+        });
     }
 }
 
