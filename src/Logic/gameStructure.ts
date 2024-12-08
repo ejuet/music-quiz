@@ -36,6 +36,10 @@ export class SaveGame {
         const leafActions = this.getLeafActions();
         return leafActions.find(a => !a.finished);
     }
+
+    getTeam(teamId: string) {
+        return this.teams.find(t => t.id === teamId);
+    }
 }
 
 export class Team {
