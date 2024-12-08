@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom';
 import { Navbar, Nav } from 'react-bootstrap';
 import { ListQuizzes } from './StartPage/ListQuizzes.tsx';
 import { QuizPage } from './QuizPage/QuizPage.tsx';
+import { Alert } from 'react-bootstrap';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -54,8 +55,28 @@ function StartPage(){
   return <div>
     <h1>Home</h1>
     <p>
-      Welcome to the music quiz app. Here you can create and play music quizzes.
+      Welcome to the music quiz app!<br/>
+      You can create or play quizzes <Link to="/quiz">here</Link>.
     </p>
+    <Alert variant="warning">
+      <Alert.Heading>Important Note</Alert.Heading>
+      <p>
+      This app is still in development.
+      There might be breaking changes anytime and the quizzes you create might be incompatible with future versions of the app.
+      Keep backups of your quizzes outside the app if you want to keep them.
+      </p>
+    </Alert>
+    <h2>Coming Soon</h2>
+    <ul>
+      <li>More question types</li>
+      <li>Better page design</li>
+      <li>User Accounts & saving quizzes in cloud (Google Firebase)</li>
+      <ul>
+        <li>Synchronize across devices (except for audio files because I will not create a file server for possibly copyrighted music)</li>
+        <li>Share quizzes with others</li>
+        <li>Simple Kahoot-style multiplayer</li>
+      </ul>
+    </ul>
   </div>
 }
 
