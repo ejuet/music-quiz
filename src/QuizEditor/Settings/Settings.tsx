@@ -1,10 +1,17 @@
 import React from "react";
 import { useAppDataContext, useCurrentQuiz } from "../../Logic/AppDataContext.tsx";
 import { Form } from "react-bootstrap";
+import { DeleteQuizButton } from "../../StartPage/ListQuizzes.tsx";
 
 export function Settings() {
+    const currentQuiz = useCurrentQuiz();
+    if(!currentQuiz) {
+        return <></>
+    }
     return <div>
+        <Form.Label>Quiz Name</Form.Label>
         <EditQuizName />
+        <DeleteQuizButton quiz={currentQuiz} />
     </div>
 }
 
