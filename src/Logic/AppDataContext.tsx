@@ -101,6 +101,9 @@ function loadAppData(): AppData {
 
     ret.musicQuizzes.forEach((quiz) => {
         Object.setPrototypeOf(quiz, MusicQuiz.prototype);
+        quiz.created = new Date(quiz.created);
+        quiz.lastModified = new Date(quiz.lastModified);
+
         quiz.items.forEach((item) => {
             if(item.questionType === "SimpleQuestion"){
                 Object.setPrototypeOf(item, SimpleQuestion.prototype);

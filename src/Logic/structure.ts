@@ -11,12 +11,7 @@ export class AppData {
     }
 
     createMusicQuiz(): MusicQuiz {
-        const quiz: MusicQuiz = {
-            id: Math.floor(Math.random() * 1000000).toString(),
-            name: "New Quiz",
-            items: [],
-            categories: []
-        };
+        const quiz = new MusicQuiz();
         this.musicQuizzes.push(quiz);
         return quiz;
     }
@@ -31,12 +26,16 @@ export class MusicQuiz {
     name: string;
     items: Question[];
     categories: Category[];
+    created: Date;
+    lastModified: Date;
 
     constructor() {
         this.id = Math.floor(Math.random() * 1000000).toString();
         this.name = "New Quiz";
         this.items = [];
         this.categories = [];
+        this.created = new Date();
+        this.lastModified = new Date();
     }
 }
 
@@ -172,6 +171,8 @@ appData.musicQuizzes = [
     {
         id: '1',
         name: 'Quiz 1',
+        created: new Date(),
+        lastModified: new Date(),
         categories: [
             {
                 id: '1',

@@ -1,36 +1,40 @@
 import { Link } from "react-router-dom";
 import { useAppDataContext } from "../Logic/AppDataContext.tsx";
 import React from "react";
-import { Button } from "react-bootstrap";
+import { Button, ButtonGroup } from "react-bootstrap";
 import DeleteButton from "../Common/DeleteButton.tsx";
 import { MusicQuiz } from "../Logic/structure.ts";
+import { Card } from "react-bootstrap";
+import { formatMyDate } from "../Common/formatDate.ts";
 
 export function ListQuizzes() {
     const d = useAppDataContext();
     return <div>
         <h1>Your Quizzes</h1>
-        {
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Quiz Name</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {d.appData.musicQuizzes.map(q => (
-                        <tr key={q.id}>
-                            <td>
-                                <Link to={`/quiz/${q.id}`}>{q.name}</Link>
-                            </td>
-                            <td style={{ textAlign: "right" }}>
-                                <DeleteQuizButton quiz={q} />
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        }
+        <div className="row">
+            {d.appData.musicQuizzes.map(q => (
+                <div className="col-md-4" key={q.id}>
+                        <Link to={`/quiz/${q.id}`} className="text-decoration-none">
+                    <Card className="mb-4">
+                            <Card.Body>
+                                <Card.Title>
+                                    {q.name}
+                                </Card.Title>
+                                <Card.Body>
+                                    <Card.Text>
+                                        <p>
+                                            {q.items.length} questions <br />
+                                            Created: {formatMyDate(q.created)} <br />
+                                            Last Modified: {formatMyDate(q.lastModified)}
+                                        </p>
+                                    </Card.Text>
+                                </Card.Body>
+                            </Card.Body>
+                    </Card>
+                    </Link>
+                </div>
+            ))}
+        </div>
         <AddQuiz />
     </div>
 }
