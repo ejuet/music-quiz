@@ -5,6 +5,7 @@ import { AudioFileList, ResetDBButton } from "../Database/DatabaseComponents.tsx
 import { UploadSoundFile } from "./Media/DropZoneSound.tsx";
 import { useNavigateToTab } from "../index.js";
 import { Grid } from "./Grid.tsx";
+import { Settings } from "./Settings/Settings.tsx";
 
 
 
@@ -22,6 +23,9 @@ export function QuizEditor() {
             <UploadSoundFile />
             <AudioFileList />
             <ResetDBButton />
+        </Tab>,
+        <Tab eventKey="settings" title="Settings" key="settings">
+            <Settings />
         </Tab>
     ]
 

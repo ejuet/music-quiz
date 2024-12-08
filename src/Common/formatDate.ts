@@ -12,14 +12,3 @@ export function formatMyDate(date: Date): string {
         return format(date, 'd.M.yyyy, HH:mm')
     }
 }
-
-// Usage:
-const date1 = new Date(Date.now() - 5 * 60 * 1000) // 5 minutes ago
-console.log(formatMyDate(date1)) // "today, 5 minutes ago"
-
-const date2 = new Date(Date.now() - 24 * 60 * 60 * 1000 + 1000 * 60 * 60 * 14 + 23 * 60000)
-// roughly "yesterday at 14:23"
-console.log(formatMyDate(date2)) // "yesterday, 14:23"
-
-const date3 = new Date('2013-01-01T09:45:00')
-console.log(formatMyDate(date3)) // "1.1.2013, 09:45"

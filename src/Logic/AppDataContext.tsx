@@ -161,7 +161,6 @@ export function useCurrentQuiz(){
     const [currentQuiz, setCurrentQuiz] = useState<MusicQuiz | undefined>(undefined);
     const quizFromUrl = useParams<{ quizID: string }>().quizID;
     useEffect(() => {
-        console.log("Setting current quiz to", quizFromUrl);
         if (quizFromUrl) {
             setCurrentQuiz(appData.musicQuizzes.find(q => q.id === quizFromUrl));
         }
