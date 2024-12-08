@@ -3,7 +3,7 @@ import { Button, Modal } from 'react-bootstrap';
 
 interface DeleteButtonProps {
     onDelete: () => void;
-    customMessage?: string;
+    customMessage?: string | JSX.Element;
 }
 
 function DeleteButton ({ onDelete, customMessage }: DeleteButtonProps) {
