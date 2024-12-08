@@ -39,7 +39,7 @@ export function ListQuizzes() {
     </div>
 }
 
-function DeleteQuizButton({quiz}:{quiz: MusicQuiz}) {
+export function DeleteQuizButton({quiz}:{quiz: MusicQuiz}) {
     const d = useAppDataContext();
     return <DeleteButton onDelete={() => {
         d.appData.deleteMusicQuiz(quiz.id);

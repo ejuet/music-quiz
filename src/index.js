@@ -14,6 +14,7 @@ import { useAppData } from './Logic/AppDataContext.tsx';
 import { Link } from 'react-router-dom';
 import { Navbar, Nav } from 'react-bootstrap';
 import { ListQuizzes } from './StartPage/ListQuizzes.tsx';
+import { QuizPage } from './QuizPage/QuizPage.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -104,12 +105,4 @@ function NavbarLink({ to, children, ...props }) {
 }
 
 
-
-function QuizPage() {
-  const currentQuiz = useCurrentQuiz();
-  return <>
-    <h1>Quiz "{currentQuiz?.name}"</h1>
-    <Link to={`edit`}>Edit</Link>
-  </>;
-}
 
