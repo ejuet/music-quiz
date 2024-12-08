@@ -5,7 +5,7 @@ import { AppData, MultiQuestion, MusicQuiz, Question, SimpleQuestion, SimpleQues
 import React from "react";
 import { useParams } from "react-router-dom";
 import { category } from "fp-ts";
-import { AnswerQuestion, GameAction, SaveGame, SelectAndAnswerQuestion, SelectQuestion, PlayGame as PlayGameDS } from "./gameStructure.ts";
+import { AnswerQuestion, GameAction, SaveGame, SelectAndAnswerQuestion, SelectQuestion, PlayGame as PlayGameDS, FinishGame } from "./gameStructure.ts";
 import { PlayGame as PlayG } from "../Play/PlayGame.tsx";
 
 function loadAppData(): AppData {
@@ -134,6 +134,9 @@ function loadAppData(): AppData {
                         Object.setPrototypeOf(subAction, SelectAndAnswerQuestion.prototype);
                         Object.setPrototypeOf((subAction as SelectAndAnswerQuestion).selectQuestion, SelectQuestion.prototype);
                         Object.setPrototypeOf((subAction as SelectAndAnswerQuestion).answerQuestion, AnswerQuestion.prototype);
+                    }
+                    else if (subAction.actionType === "FinishGame"){
+                        Object.setPrototypeOf(subAction, FinishGame.prototype);
                     }
                 });
             }

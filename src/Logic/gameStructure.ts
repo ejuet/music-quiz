@@ -21,6 +21,11 @@ export class SaveGame {
         this.gameActions = [new PlayGame(quiz, this.teams)];
     }
 
+    getCurrentPoints(teamId: string) {
+        const playGame = this.gameActions.find(a => a.actionType === "PlayGame") as PlayGame;
+        return playGame.getCurrentPoints(teamId);
+    }
+
     getLeafActions() {
         return this.gameActions.map(a => {
             return a.getLeafActions();
@@ -123,9 +128,11 @@ export class PlayGame extends CompositeGameAction {
     actionType = "PlayGame";
     _actions: GameAction[] = [];
     questionIds: string[] = [];
+    teamIds: string[] = [];
     constructor(quiz: MusicQuiz, teams: Team[]) {
         super();
         this.questionIds = quiz.items.map(i => i.questionId);
+        this.teamIds = teams.map(t => t.id);
 
         new Array(quiz.items.length).fill(0).forEach((_, i) => {
             const currentTeam = teams[i % teams.length];
@@ -135,14 +142,33 @@ export class PlayGame extends CompositeGameAction {
         });
     }
 
+    getCurrentPoints(teamId: string) {
+        var points = 0
+        this._actions.forEach((a, i) => {
+            if(a instanceof SelectAndAnswerQuestion && a.teamId === teamId){
+                points += a.answerQuestion.points;
+            }
+        })
+        return points;
+    }
+
     get actions(){
+
+        //set the available questions for each select question
         this._actions.forEach((a, i) => {
             if(a instanceof SelectAndAnswerQuestion){
                 const takenQuestionIds = this._actions.slice(0, i).filter(a => a instanceof SelectAndAnswerQuestion).map(a => (a as SelectAndAnswerQuestion).selectQuestion.questionId);
                 a.selectQuestion.availableQuestions = this.questionIds.filter(q => !takenQuestionIds.includes(q));
             }
         })
-        return this._actions;
+
+        //calculate the score for each team
+        const finishGame = new FinishGame();
+        finishGame.teamStats = this.teamIds.map(teamId => {
+            const points = this.getCurrentPoints(teamId);
+            return {teamId, points};
+        });
+        return [...this._actions, finishGame];
     }
 }
 
@@ -189,5 +215,16 @@ export class AnswerQuestion extends TeamAction {
     actionType = "AnswerQuestion";
     questionId: string = "";
     points: number = 0;
+}
+
+export class FinishGame extends LeafGameAction {
+    actionType = "FinishGame";
+    finished: boolean = false;
+    teamStats: TeamStats[] = [];
+}
+
+class TeamStats{
+    teamId: string;
+    points: number;
 }
 

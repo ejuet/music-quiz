@@ -1,7 +1,7 @@
 import { Button } from "react-bootstrap";
 import React from "react";
 import { useAppDataContext, useCurrentGame, useCurrentQuiz } from "../Logic/AppDataContext.tsx";
-import { AnswerQuestion, GameAction, SelectQuestion, TeamAction } from "../Logic/gameStructure.ts";
+import { AnswerQuestion, FinishGame, GameAction, SelectQuestion, TeamAction } from "../Logic/gameStructure.ts";
 
 export function PlayGame(){
     const currentGame = useCurrentGame();
@@ -40,6 +40,10 @@ function DisplayAction({ action }: { action:GameAction }) {
             action.actionType === "AnswerQuestion" &&
             <AnswerQuestionAction action={action as AnswerQuestion} />
         }
+        {
+            action.actionType === "FinishGame" &&
+            <FinishGameAction action={action as FinishGame} />
+        }
     </div>
 }
 
@@ -64,6 +68,7 @@ function SelectQuestionAction({ action }: { action: SelectQuestion }) {
     return <div>
         <h1>Select Question</h1>
         <p>Team <b>{team?.name}</b> has to select their next question!</p>
+        <ShowCurrentScore />
         {
             currentQuiz?.items.map((q) => {
                 if(action.availableQuestions.includes(q.questionId)){
@@ -83,12 +88,35 @@ function AnswerQuestionAction({ action }: { action: AnswerQuestion }) {
     return <div>
         <h1>Answer Question</h1>
         <p>Team <b>{team?.name}</b> has to answer the question!</p>
+        <ShowCurrentScore />
         <Button onClick={() => {
             action.finished = true;
+            action.points = 10;
             setAppData(appData);
         }}>Finish</Button>
     </div>
 }
+
+function ShowCurrentScore(){
+    const team = useCurrentTeam();
+    const currentGame = useCurrentGame();
+    if(!team || !currentGame){
+        return <></>;
+    }
+    return <div>
+        <p>Team <b>{team.name}</b> currently has {currentGame.getCurrentPoints(team.id)} points!</p>
+    </div>
+}
+
+function FinishGameAction({ action }: { action: FinishGame }) {
+    return <div>
+        <h1>Game Finished</h1>
+        {
+            action.teamStats.map(s => <p>Team {s.teamId} has {s.points} points!</p>)
+        }
+    </div>
+}
+
 
 export function GameHistory(){
     const currentGame = useCurrentGame();
