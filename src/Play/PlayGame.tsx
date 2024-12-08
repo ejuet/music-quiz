@@ -1,7 +1,7 @@
 import { Button } from "react-bootstrap";
 import React from "react";
 import { useAppDataContext, useCurrentGame, useCurrentQuiz } from "../Logic/AppDataContext.tsx";
-import { SelectQuestion } from "../Logic/gameStructure.ts";
+import { AnswerQuestion, SelectQuestion } from "../Logic/gameStructure.ts";
 
 export function PlayGame(){
     return <>
@@ -30,7 +30,8 @@ export function GameHistory(){
         </p>
         <h2>Leaf Actions</h2>
         <Button onClick={() => {
-            (currentGame.getLeafActions()[0] as SelectQuestion).questionId = "eineQuestionID";
+            (currentGame.getLeafActions()[0] as SelectQuestion).questionId = "784908";
+            (currentGame.getLeafActions()[1] as AnswerQuestion).finished = true;
             setAppData(appData);
         }}>Example Select First</Button>
         <p style={{ whiteSpace: "pre-wrap" }}>

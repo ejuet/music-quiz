@@ -121,16 +121,28 @@ export class ChangePoints extends LeafGameAction {
 
 export class PlayGame extends CompositeGameAction {
     actionType = "PlayGame";
-    actions: GameAction[] = [];
+    _actions: GameAction[] = [];
+    questionIds: string[] = [];
     constructor(quiz: MusicQuiz, teams: Team[]) {
         super();
+        this.questionIds = quiz.items.map(i => i.questionId);
 
         new Array(quiz.items.length).fill(0).forEach((_, i) => {
             const currentTeam = teams[i % teams.length];
             const n = new SelectAndAnswerQuestion()
             n.teamId = currentTeam.id;
-            this.actions.push(n);
+            this._actions.push(n);
         });
+    }
+
+    get actions(){
+        this._actions.forEach((a, i) => {
+            if(a instanceof SelectAndAnswerQuestion){
+                const takenQuestionIds = this._actions.slice(0, i).filter(a => a instanceof SelectAndAnswerQuestion).map(a => (a as SelectAndAnswerQuestion).selectQuestion.questionId);
+                a.selectQuestion.availableQuestions = this.questionIds.filter(q => !takenQuestionIds.includes(q));
+            }
+        })
+        return this._actions;
     }
 }
 
@@ -146,9 +158,12 @@ export class SelectAndAnswerQuestion extends CompositeGameAction {
     }
 
     get actions() {
+        //if the select question is finished, put the selected question id into the answer question
         if(this.selectQuestion.finished){
             this.answerQuestion.questionId = this.selectQuestion.questionId;
         }
+
+        //set the teamId for both actions
         this.selectQuestion.teamId = this.teamId;
         this.answerQuestion.teamId = this.teamId;
 
@@ -163,15 +178,16 @@ export abstract class TeamAction extends LeafGameAction {
 export class SelectQuestion extends TeamAction {
     actionType = "SelectQuestion";
     questionId: string = "";
+    availableQuestions: string[] = [];
     get finished() {
         return this.questionId !== "";
     }
 }
 
 export class AnswerQuestion extends TeamAction {
+    finished: boolean = false;
     actionType = "AnswerQuestion";
     questionId: string = "";
     points: number = 0;
-    finished = false;
 }
 
