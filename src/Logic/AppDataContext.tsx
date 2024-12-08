@@ -5,6 +5,7 @@ import { AppData, MultiQuestion, MusicQuiz, Question, SimpleQuestion, SimpleQues
 import React from "react";
 import { useParams } from "react-router-dom";
 import { category } from "fp-ts";
+import { SaveGame } from "./gameStructure.ts";
 
 function loadAppData(): AppData {
     const ret = localStorage.getItem("musicQuizAppData") ? JSON.parse(localStorage.getItem("musicQuizAppData")!) as AppData : new AppData();
@@ -166,4 +167,16 @@ export function useCurrentQuiz(){
         }
     }, [quizFromUrl, appData.musicQuizzes]);
     return currentQuiz;
+}
+
+export function useCurrentGame(){
+    const { appData } = useAppDataContext();
+    const [currentGame, setCurrentGame] = useState<SaveGame | undefined>(undefined);
+    const gameFromUrl = useParams<{ gameID: string }>().gameID;
+    useEffect(() => {
+        if (gameFromUrl) {
+            setCurrentGame(appData.saveGames.find(q => q.saveId === gameFromUrl));
+        }
+    }, [gameFromUrl, appData.saveGames]);
+    return currentGame;
 }

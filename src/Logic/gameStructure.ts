@@ -10,7 +10,7 @@ export class SaveGame {
         this.teams = [];
         this.created = new Date();
         this.name = "New Save";
-        this.saveId = Math.random().toString();
+        this.saveId = (Math.random() * 1000000).toString();
     }
 }
 
@@ -22,7 +22,7 @@ export class Team {
 
     constructor() {
         this.players = [];
-        this.id = Math.random().toString();
+        this.id = (Math.random() * 1000000).toString();
         this.name = "";
         this.gameActions = [];
     }
