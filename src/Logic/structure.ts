@@ -1,13 +1,16 @@
 import * as t from 'io-ts';
 import { isRight } from 'fp-ts/Either';
 import { cons } from 'fp-ts/lib/ReadonlyNonEmptyArray';
+import { SaveGame } from './gameStructure.ts';
 //import { questionWrappers, QuestionWrapper, QuestionWrapperFactory } from './QuestionWrapper.ts';
 
 export class AppData {
     musicQuizzes: MusicQuiz[];
+    saveGames: SaveGame[];
 
     constructor() {
         this.musicQuizzes = [];
+        this.saveGames = [];
     }
 
     createMusicQuiz(): MusicQuiz {
@@ -18,6 +21,13 @@ export class AppData {
 
     deleteMusicQuiz(id: string) {
         this.musicQuizzes = this.musicQuizzes.filter(quiz => quiz.id !== id);
+    }
+
+    addSaveGame(quizId: string): SaveGame {
+        const game = new SaveGame();
+        game.quizId = quizId;
+        this.saveGames.push(game);
+        return game;
     }
 }
 
