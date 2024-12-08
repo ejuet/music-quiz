@@ -36,5 +36,9 @@ export function GameHistory(){
         <p style={{ whiteSpace: "pre-wrap" }}>
             {JSON.stringify(currentGame.getLeafActions(), null, 4)}
         </p>
+        <h2>Next Action</h2>
+        <p style={{ whiteSpace: "pre-wrap" }}>
+            {JSON.stringify(currentGame.getNextAction(), null, 4)}
+        </p>
     </div>
 }

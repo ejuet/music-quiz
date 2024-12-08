@@ -36,6 +36,11 @@ export class SaveGame {
             return [a];
         }).flat();
     }
+
+    getNextAction(){
+        const leafActions = this.getLeafActions();
+        return leafActions.find(a => !a.finished);
+    }
 }
 
 export class Team {
@@ -132,11 +137,18 @@ export class SelectAndAnswerQuestion extends CompositeGameAction {
         if(this.selectQuestion.finished){
             this.answerQuestion.questionId = this.selectQuestion.questionId;
         }
+        this.selectQuestion.teamId = this.teamId;
+        this.answerQuestion.teamId = this.teamId;
+
         return [this.selectQuestion, this.answerQuestion];
     }
 }
 
-export class SelectQuestion extends LeafGameAction {
+export abstract class TeamAction extends LeafGameAction {
+    teamId: string;
+}
+
+export class SelectQuestion extends TeamAction {
     actionType = "SelectQuestion";
     questionId: string = "";
     get finished() {
@@ -144,7 +156,7 @@ export class SelectQuestion extends LeafGameAction {
     }
 }
 
-export class AnswerQuestion extends LeafGameAction {
+export class AnswerQuestion extends TeamAction {
     actionType = "AnswerQuestion";
     questionId: string = "";
     points: number = 0;
