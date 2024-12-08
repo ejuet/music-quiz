@@ -123,10 +123,11 @@ function ShowCurrentScore(){
 }
 
 function FinishGameAction({ action }: { action: FinishGame }) {
+    const currentGame = useCurrentGame();
     return <div>
         <h1>Game Finished</h1>
         {
-            action.teamStats.map(s => <p>Team {s.teamId} has {s.points} points!</p>)
+            action.teamStats.map(s => <p>Team {currentGame?.getTeam(s.teamId)?.name} has {s.points} points!</p>)
         }
     </div>
 }
