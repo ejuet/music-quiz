@@ -1,7 +1,6 @@
 import React from 'react';
-import { Category, Question, SimpleQuestion, SimpleQuestionDef } from '../Logic/structure.ts';
+import { Category, Question, SimpleQuestion } from '../Logic/structure.ts';
 import { useAppDataContext, useCurrentQuiz } from '../Logic/AppDataContext.tsx';
-import { QuestionWrapperFactory } from '../Logic/QuestionWrapper.ts';
 import { Button, Table } from 'react-bootstrap';
 import { EditNumber, EditQuestion, EditText } from './QuestionEditor/EditQuestion.tsx';
 import { useState } from 'react';
@@ -13,7 +12,9 @@ export function Grid(){
     const {setAppData, appData} = useAppDataContext();
 
     // Get all unique points to display them in the table as columns
-    const allPoints = currentQuiz? Array.from(new Set(currentQuiz!.items.map((item)=> QuestionWrapperFactory.create(item).getPoints()))).sort((a,b)=>a-b): []
+    //const allPoints = currentQuiz? Array.from(new Set(currentQuiz!.items.map((item)=> QuestionWrapperFactory.create(item).getPoints()))).sort((a,b)=>a-b): []
+
+    const allPoints = currentQuiz?.items.map((item) => item.getPoints()).filter((value, index, self) => self.indexOf(value) === index).sort((a,b)=>a-b) || [];
 
     return (
         <div>
@@ -42,7 +43,7 @@ export function Grid(){
                                 </td>
                                 {
                                     allPoints.map((points) => {
-                                        const questionsInColumn = questions.filter((question) => QuestionWrapperFactory.create(question).getPoints() === points);
+                                        const questionsInColumn = questions.filter((question) => question.getPoints() === points);
                                         return <td key={category.id+"-"+points} style={{maxWidth: (1/allPoints.length)*60+"vw"}}>
                                             {
                                                 questionsInColumn.map((question, ind) => <EditQuestion key={category.id+"-"+points+"-"+ind} question={question}/>)
@@ -74,12 +75,12 @@ export function Grid(){
 function EditPoints({points}: {points: number}){
     const {setAppData, appData} = useAppDataContext();
     const currentQuiz = useCurrentQuiz();
-    const questionsWithPoints = currentQuiz?.items.filter((item) => QuestionWrapperFactory.create(item).getPoints() === points) as Question[];
+    const questionsWithPoints = currentQuiz?.items.filter((item) => item.getPoints() === points) as Question[];
 
     return <div style={{display: "inline-block"}}>
     <EditNumber number={points} onChange={(value) => {
         questionsWithPoints.forEach((question) => {
-            if(isRight(SimpleQuestionDef.decode(question))) {
+            if(true) {
                 const parsedQuestion = question as SimpleQuestion
                 parsedQuestion.pointsIfRight = value;
             }
@@ -97,15 +98,10 @@ function AddQuestionButton({ category, points=0 }: { category: Category, points?
     return <Button variant="primary"
     style={{width: '100%'}}
     onClick={() => {
-        currentQuiz!.items.push({
-            category: category.id,
-            question: '',
-            pointsIfRight: points? points : currentQuiz!.items.reduce((acc, item) => Math.max(acc, item.pointsIfRight), 0) + 10,
-            answer: '',
-            song: {
-                filename: ''
-            }
-        });
+        const newQuestion = new SimpleQuestion();
+        newQuestion.category = category.id;
+        newQuestion.pointsIfRight = points? points : currentQuiz!.items.reduce((acc, item) => Math.max(acc, item.getPoints()), 0) + 10;
+        currentQuiz!.items.push(newQuestion);
         setAppData(appData);
     }} >+</Button>
 }

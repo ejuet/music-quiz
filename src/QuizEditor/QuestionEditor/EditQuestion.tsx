@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, ButtonGroup, Card, Dropdown, Form } from "react-bootstrap";
-import { DisplayableText, PlayableSong, Question, SimpleQuestion, SimpleQuestionDef } from "../../Logic/structure.ts";
+import { DisplayableText, PlayableSong, Question, SimpleQuestion } from "../../Logic/structure.ts";
 import { isRight } from "fp-ts/lib/Either";
 import * as t from 'io-ts';
 import { useAppDataContext, useCurrentQuiz } from "../../Logic/AppDataContext.tsx";
@@ -11,9 +11,10 @@ import { UploadSoundFile } from "../Media/DropZoneSound.tsx";
 
 export function EditQuestion({ question }: { question: Question }) {
     return <Card className="p-2">
+        <small>Type: {question.questionType}</small>
         {
-            isRight(SimpleQuestionDef.decode(question)) &&
-            <SimpleQuestionEditor question={question} />
+            question.questionType === 'SimpleQuestion' &&
+            <SimpleQuestionEditor question={question as SimpleQuestion} />
         }
         <Form.Label>Category</Form.Label>
         <EditCategory category={question.category} onChange={(value) => question.category = value} />

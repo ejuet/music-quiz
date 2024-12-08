@@ -1,10 +1,14 @@
 import * as t from 'io-ts';
 import { isRight } from 'fp-ts/Either';
 import { cons } from 'fp-ts/lib/ReadonlyNonEmptyArray';
-import { questionWrappers, QuestionWrapper, QuestionWrapperFactory } from './QuestionWrapper.ts';
+//import { questionWrappers, QuestionWrapper, QuestionWrapperFactory } from './QuestionWrapper.ts';
 
 export class AppData {
     musicQuizzes: MusicQuiz[];
+
+    constructor() {
+        this.musicQuizzes = [];
+    }
 
     createMusicQuiz(): MusicQuiz {
         const quiz: MusicQuiz = {
@@ -22,14 +26,21 @@ export class AppData {
     }
 }
 
-export interface MusicQuiz {
+export class MusicQuiz {
     id: string;
     name: string;
     items: Question[];
     categories: Category[];
+
+    constructor() {
+        this.id = Math.floor(Math.random() * 1000000).toString();
+        this.name = "New Quiz";
+        this.items = [];
+        this.categories = [];
+    }
 }
 
-export interface Category{
+export class Category{
     id: string;
     name: string;
 }
@@ -37,135 +48,64 @@ export interface Category{
 
 // ---------- Define the different types of "Question Parts" ----------
 
-export const PlayableSongDef = t.type({
-    filename: t.string
-});
-export type PlayableSong = t.TypeOf<typeof PlayableSongDef>;
+export class PlayableSong {
+    filename: string;
+}
 
-export const RightOrWrongDef = t.type({
-    pointsIfRight: t.number,
-    pointsIfWrong: t.number
-});
+export class RightOrWrong {
+    pointsIfRight: number;
+    pointsIfWrong: number;
+}
 
-export const SimpleTextDef = t.type({
-    text: t.string
-    //add other properties for displaying text here
-});
+export class SimpleText {
+    text: string;
+    // add other properties for displaying text here
+}
 
-const DisplayableTextDef = t.union([SimpleTextDef, t.string]);
-export type DisplayableText = t.TypeOf<typeof DisplayableTextDef>;
+export type DisplayableText = SimpleText | string;
 
-
-const QuestionPartDef = t.union([SimpleTextDef, PlayableSongDef, RightOrWrongDef, DisplayableTextDef]);
-export type QuestionPart = t.TypeOf<typeof QuestionPartDef>;
+export type QuestionPart = SimpleText | PlayableSong | RightOrWrong | DisplayableText;
 
 // ---------- Define the "Question" type ----------
 
-// They all intersect with this basic definition:
-const BasicQuestionDef = t.type({
-    category: t.string
-})
-
-// --- A question with multiple parts ---
-const QuestionWithPartsDef = t.intersection([
-    BasicQuestionDef,
-    t.type({
-        parts: t.array(QuestionPartDef)
-    })
-]);
-
-export type QuestionWithParts = t.TypeOf<typeof QuestionWithPartsDef>;
-export class QuestionWithPartsWrapper implements QuestionWrapper {
-    question: QuestionWithParts;
-
-    constructor(question: QuestionWithParts) {
-        this.question = question;
-    }
-
-    getParts(): QuestionPart[] {
-        return this.question.parts;
-    }
-
-    getPoints(): number {
-        return this.question.parts.reduce((acc, part) => {
-            if (RightOrWrongDef.is(part)) {
-                return acc + part.pointsIfRight;
-            }
-            return acc;
-        }, 0);
-    }
+export abstract class Question{
+    abstract category: string;
+    abstract questionType: string;
+    abstract getParts(): QuestionPart[];
+    abstract getPoints(): number;
 }
-questionWrappers[QuestionWithPartsDef.name] = q => new QuestionWithPartsWrapper(q);
+
+// They all intersect with this basic definition:
+export abstract class BasicQuestion extends Question {
+    category: string;
+}
+
 
 // --- An ordinary music quiz question ---
-export const SimpleQuestionDef = t.intersection([
-    BasicQuestionDef,
-    t.type({
-        question: DisplayableTextDef,
-        song: PlayableSongDef,
-        pointsIfRight: t.number,
-        answer: DisplayableTextDef
-    })
-]);
+export class SimpleQuestion extends BasicQuestion {
+    questionType: string = "SimpleQuestion";
+    question: DisplayableText;
+    song: PlayableSong;
+    pointsIfRight: number;
+    answer: DisplayableText;
 
-export type SimpleQuestion = t.TypeOf<typeof SimpleQuestionDef>;
-export class SimpleQuestionWrapper implements QuestionWrapper {
-    question: SimpleQuestion;
+    constructor() {
+        super();
+        this.question = { text: "" };
+        this.song = { filename: "" };
+        this.pointsIfRight = 0;
+        this.answer = { text: "" };
+    }
 
-    constructor(question: SimpleQuestion) {
-        this.question = question;
+    getPoints(): number {
+        return this.pointsIfRight;
     }
 
     getParts(): QuestionPart[] {
-        return [
-            this.question.question,
-            this.question.song,
-            {
-                pointsIfRight: this.question.pointsIfRight,
-                pointsIfWrong: 0
-            },
-            this.question.answer
-        ];
-    }
-
-    getPoints(): number {
-        return this.question.pointsIfRight;
+        return [this.question, this.song, { pointsIfRight: this.pointsIfRight, pointsIfWrong: 0 }, this.answer];
     }
 }
-questionWrappers[SimpleQuestionDef.name] = q => new SimpleQuestionWrapper(q);
 
-// --- An individual question part ---
-const OneQuestionPartDef = t.intersection([
-    BasicQuestionDef,
-    QuestionPartDef
-]);
-export type OneQuestionPart = t.TypeOf<typeof OneQuestionPartDef>;
-
-export class QuestionPartWrapper implements QuestionWrapper<OneQuestionPart> {
-    question: OneQuestionPart;
-
-    constructor(question: OneQuestionPart) {
-        this.question = question;
-    }
-
-    getParts(): OneQuestionPart[] {
-        return [this.question];
-    }
-
-    getPoints(): number {
-        if (RightOrWrongDef.is(this.question)) {
-            return this.question.pointsIfRight;
-        }
-        return 0;
-    }
-}
-questionWrappers[QuestionPartDef.name] = question => new QuestionPartWrapper(question);
-
-
-export const questionDefinitions = [QuestionWithPartsDef, SimpleQuestionDef, QuestionPartDef]  as [t.Mixed, t.Mixed, t.Mixed];
-const QuestionDef = t.union(questionDefinitions);
-
-export type Question = t.TypeOf<typeof QuestionDef>;
 //export type Question = QuestionWithParts | SimpleQuestion | OneQuestionPart;
 
 
@@ -193,7 +133,7 @@ appData.musicQuizzes = [
                 answer: {
                     text: 'Paris'
                 }
-            }
+            }  as SimpleQuestion
         ]
     }
 ];
