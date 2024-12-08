@@ -57,16 +57,23 @@ export class Category{
 
 // ---------- Define the different types of "Question Parts" ----------
 
-export class PlayableSong {
+export abstract class QuestionPartP{
+    abstract partType: string;
+}
+
+export class PlayableSong extends QuestionPartP {
+    partType: string = "PlayableSong";
     filename: string;
 }
 
-export class RightOrWrong {
+export class RightOrWrong extends QuestionPartP {
+    partType: string = "RightOrWrong";
     pointsIfRight: number;
     pointsIfWrong: number;
 }
 
-export class SimpleText {
+export class SimpleText extends QuestionPartP {
+    partType: string = "SimpleText";
     text: string;
     // add other properties for displaying text here
 }
@@ -107,10 +114,10 @@ export class SimpleQuestionContent extends QuestionContent {
 
     constructor() {
         super();
-        this.question = { text: "" };
-        this.song = { filename: "" };
+        this.question = new SimpleText();
+        this.song = new PlayableSong();
         this.pointsIfRight = 10; //this cant be 0 because at some point this would get serialized as null and throws errors
-        this.answer = { text: "" };
+        this.answer = new SimpleText();
     }
 
     getPoints(): number {
@@ -118,7 +125,7 @@ export class SimpleQuestionContent extends QuestionContent {
     }
 
     getParts(): QuestionPart[] {
-        return [this.question, this.song, { pointsIfRight: this.pointsIfRight, pointsIfWrong: 0 }, this.answer];
+        return [this.question, this.song, { pointsIfRight: this.pointsIfRight, pointsIfWrong: 0, partType: "RightOrWrong" }, this.answer];
     }
 
     setPoints(points: number) {

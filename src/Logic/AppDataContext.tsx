@@ -1,7 +1,7 @@
 // ---------- Save to Cache ----------
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { AppData, MultiQuestion, MusicQuiz, Question, SimpleQuestion, SimpleQuestionContent } from "./structure.ts";
+import { AppData, MultiQuestion, MusicQuiz, PlayableSong, Question, QuestionPartP, RightOrWrong, SimpleQuestion, SimpleQuestionContent, SimpleText } from "./structure.ts";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { category } from "fp-ts";
@@ -119,6 +119,21 @@ function loadAppData(): AppData {
                     Object.setPrototypeOf(content, SimpleQuestionContent.prototype);
                 });
             }
+            item.getParts().forEach((part) => {
+                const p = part as QuestionPartP
+                if(p.partType === "SimpleText"){
+                    Object.setPrototypeOf(p, SimpleText.prototype);
+                }
+                else if(p.partType === "RightOrWrong"){
+                    Object.setPrototypeOf(p, RightOrWrong.prototype);
+                }
+                else if(p.partType === "PlayableSong"){
+                    Object.setPrototypeOf(p, PlayableSong.prototype);
+                }
+                else if(typeof part === "string"){
+                    Object.setPrototypeOf(p, String.prototype);
+                }
+            })
         });
     });
 

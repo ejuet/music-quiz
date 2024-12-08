@@ -2,6 +2,7 @@ import { Button } from "react-bootstrap";
 import React from "react";
 import { useAppDataContext, useCurrentGame, useCurrentQuiz } from "../Logic/AppDataContext.tsx";
 import { AnswerQuestion, FinishGame, GameAction, SelectQuestion, TeamAction } from "../Logic/gameStructure.ts";
+import { RenderQuestion } from "./RenderQuestion.tsx";
 
 export function PlayGame(){
     const currentGame = useCurrentGame();
@@ -85,13 +86,26 @@ function SelectQuestionAction({ action }: { action: SelectQuestion }) {
 function AnswerQuestionAction({ action }: { action: AnswerQuestion }) {
     const team = useCurrentTeam();
     const { appData, setAppData } = useAppDataContext();
+    const currentQuiz = useCurrentQuiz();
+    if(!currentQuiz){
+        return <></>;
+    }
+    const currentQuestion = currentQuiz.items.find(q => q.questionId === action.questionId);
     return <div>
         <h1>Answer Question</h1>
         <p>Team <b>{team?.name}</b> has to answer the question!</p>
         <ShowCurrentScore />
+        {
+            currentQuestion ?
+            <RenderQuestion question={currentQuestion} modifyPoints={(points)=>{
+                action.points = points;
+                setAppData(appData);
+            }} />
+            :
+            <p>Question "{action.questionId}" not found</p>
+        }
         <Button onClick={() => {
             action.finished = true;
-            action.points = 10;
             setAppData(appData);
         }}>Finish</Button>
     </div>

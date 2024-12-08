@@ -83,7 +83,7 @@ function EditSong({ song, onChange }: { song: PlayableSong, onChange: (value: Pl
                         song.filename !== "" &&
                         <Button variant="secondary" style={{ width: '100%' }}
                             onClick={() => {
-                                onChange({ filename: '' });
+                                onChange(new PlayableSong());
                                 setAppData(appData);
                             }}
                         >
@@ -94,7 +94,9 @@ function EditSong({ song, onChange }: { song: PlayableSong, onChange: (value: Pl
 
                 <Dropdown.Item as="div">
                     <UploadSoundFile onUpload={(file) => {
-                        onChange({ filename: file.name });
+                        const playSong = new PlayableSong();
+                        playSong.filename = file.name;
+                        onChange(playSong);
                         setAppData(appData);
                     }} />
                 </Dropdown.Item>
@@ -104,7 +106,9 @@ function EditSong({ song, onChange }: { song: PlayableSong, onChange: (value: Pl
                 {
                     audioFiles.map((file) => {
                         return <Dropdown.Item key={file.name} onClick={() => {
-                            onChange({ filename: file.name });
+                            const playSong = new PlayableSong();
+                            playSong.filename = file.name;
+                            onChange(playSong);
                             setAppData(appData);
                         }}>{file.name}</Dropdown.Item>
                     })
