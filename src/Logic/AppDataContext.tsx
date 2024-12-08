@@ -130,13 +130,7 @@ function loadAppData(): AppData {
                 Object.setPrototypeOf(action, PlayGameDS.prototype);
                 const parsedAction = action as PlayGameDS;
                 parsedAction.actions.forEach((subAction) => {
-                    if(subAction.actionType === "SelectQuestion"){
-                        Object.setPrototypeOf(subAction, SelectQuestion.prototype);
-                    }
-                    else if(subAction.actionType === "AnswerQuestion"){
-                        Object.setPrototypeOf(subAction, AnswerQuestion.prototype);
-                    }
-                    else if (subAction.actionType === "SelectAndAnswerQuestion"){
+                    if (subAction.actionType === "SelectAndAnswerQuestion"){
                         Object.setPrototypeOf(subAction, SelectAndAnswerQuestion.prototype);
                         Object.setPrototypeOf((subAction as SelectAndAnswerQuestion).selectQuestion, SelectQuestion.prototype);
                         Object.setPrototypeOf((subAction as SelectAndAnswerQuestion).answerQuestion, AnswerQuestion.prototype);
