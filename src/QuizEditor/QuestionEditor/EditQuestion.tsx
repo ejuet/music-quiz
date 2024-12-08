@@ -143,7 +143,11 @@ export function EditText({ text, onChange }: { text: DisplayableText, onChange: 
 export function EditNumber({ number, onChange }: { number: number, onChange: (value: number) => void }) {
     const { setAppData, appData } = useAppDataContext();
     const handleChange = (e) => {
-        const value = parseInt(e.target.value);
+        var value = parseInt(e.target.value);
+        if (isNaN(value)) {
+            value = 0;
+        }
+        console.log(value);
         onChange(value);
         setAppData(appData);
     };
