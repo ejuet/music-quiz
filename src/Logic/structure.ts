@@ -78,9 +78,15 @@ export class SimpleText extends QuestionPartP {
     // add other properties for displaying text here
 }
 
+export class ShowAnswerButton extends QuestionPartP {
+    partType: string = "ShowAnswerButton";
+    answer: DisplayableText;
+    RightOrWrong: RightOrWrong;
+}
+
 export type DisplayableText = SimpleText | string;
 
-export type QuestionPart = SimpleText | PlayableSong | RightOrWrong | DisplayableText;
+export type QuestionPart = SimpleText | PlayableSong | RightOrWrong | DisplayableText | ShowAnswerButton;
 
 // ---------- Define the "Question" type ----------
 
@@ -125,7 +131,12 @@ export class SimpleQuestionContent extends QuestionContent {
     }
 
     getParts(): QuestionPart[] {
-        return [this.question, this.song, { pointsIfRight: this.pointsIfRight, pointsIfWrong: 0, partType: "RightOrWrong" }, this.answer];
+        const showAnswerButton = new ShowAnswerButton();
+        showAnswerButton.answer = this.answer;
+        showAnswerButton.RightOrWrong = new RightOrWrong();
+        showAnswerButton.RightOrWrong.pointsIfRight = this.pointsIfRight;
+        showAnswerButton.RightOrWrong.pointsIfWrong = 0;
+        return [this.question, this.song, showAnswerButton];
     }
 
     setPoints(points: number) {
