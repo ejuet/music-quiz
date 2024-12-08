@@ -13,6 +13,7 @@ import DeleteButton from "../../Common/DeleteButton.tsx";
 export function EditQuestion({ question }: { question: Question }) {
     return <Card className="p-2">
         <small>Type: {question.questionType}</small>
+        <small>Question ID: {question.questionId}</small>
         {
             question.questionType === 'SimpleQuestion' &&
             <SimpleQuestionEditor question={(question as SimpleQuestion).content} />

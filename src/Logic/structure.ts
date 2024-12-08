@@ -75,6 +75,11 @@ export abstract class QuestionContent{
 export abstract class Question extends QuestionContent {
     abstract category: string;
     abstract questionType: string;
+    questionId: string;
+    constructor() {
+        super();
+        this.questionId = Math.floor(Math.random() * 1000000).toString();
+    }
 }
 
 // They all intersect with this basic definition:
