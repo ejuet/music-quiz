@@ -1,4 +1,4 @@
-import { MultiQuestion, MusicQuiz, Question, SimpleQuestion } from "./structure.ts";
+import { MusicQuiz } from "./structure";
 
 export class SaveGame {
     saveId: string;
@@ -140,7 +140,7 @@ export class PlayGame extends CompositeGameAction {
 
         new Array(quiz.items.length).fill(0).forEach((_, i) => {
             const currentTeam = teams[i % teams.length];
-            const n = new SelectAndAnswerQuestion(quiz.items)
+            const n = new SelectAndAnswerQuestion()
             n.teamId = currentTeam.id;
             this._actions.push(n);
         });
@@ -181,10 +181,10 @@ export class SelectAndAnswerQuestion extends CompositeGameAction {
     teamId: string;
     selectQuestion: SelectQuestion;
     answerQuestion: AnswerQuestion;
-    constructor(questions: Question[]) {
+    constructor() {
         super();
         this.selectQuestion = new SelectQuestion();
-        this.answerQuestion = new AnswerQuestion(questions);
+        this.answerQuestion = new AnswerQuestion();
     }
 
     get actions() {
@@ -219,66 +219,8 @@ export class SelectQuestion extends TeamAction {
 export class AnswerQuestion extends TeamAction {
     finished: boolean = false;
     actionType = "AnswerQuestion";
-    _questionID: string = "";
-    get questionId() {
-        return this._questionID;
-    }
-    leafs: AnswerQuestion[] = [];
-    set questionId(value: string) {
-        this._questionID = value;
-
-        //if the question is a multi question, create a new answer question for each sub question
-        if(this._questionID!=="" && this.leafs.length===0){
-            const question = this.questions.find(q => q.questionId === this._questionID);
-            if(question){
-                console.log("found question", question);
-                if(question.questionType=="MultiQuestion"){
-                    const x = (question as MultiQuestion).content.map((content, i) => {
-                        const a = new AnswerQuestion([]);
-                        a.questionId = "";
-                        a.teamId = this.teamId;
-                        const newQ = new SimpleQuestion();
-                        newQ.content = content;
-                        a.questionToAnswer = newQ;
-                        return a;
-                    }) as this[];
-                    this.leafs = x;
-                }
-                else{
-                    this.questionToAnswer = question;
-                }
-            }
-        }
-    }
-    
-    _points: number = 0;
-    get points() {
-        if(this.questionToAnswer){
-            console.log("returning points", this._points);
-            return this._points
-        }
-        console.log("returning points", this.leafs.reduce((acc, a) => acc + a.points, 0));
-        return this.leafs.reduce((acc, a) => acc + a.points, 0);
-    }
-
-    set points(value: number) {
-        console.log("setting points", value);
-        this._points = value;
-    }
-
-    questions: Question[];
-    questionToAnswer: Question | undefined;
-    constructor(questions: Question[]) {
-        super();
-        this.questions = questions;
-    }
-
-    getLeafActions(): this[] {
-        if(this.questionId!=="" && this.leafs.length>0){
-            return this.leafs as this[];
-        }
-        return [this];
-    }
+    questionId: string = "";
+    points: number = 0;
 }
 
 export class FinishGame extends LeafGameAction {

@@ -8,37 +8,6 @@ import { category } from "fp-ts";
 import { AnswerQuestion, GameAction, SaveGame, SelectAndAnswerQuestion, SelectQuestion, PlayGame as PlayGameDS, FinishGame } from "./gameStructure.ts";
 import { PlayGame as PlayG } from "../Play/PlayGame.tsx";
 
-function setPrototypeOfQuestion(item: Question){
-    if(item.questionType === "SimpleQuestion"){
-        Object.setPrototypeOf(item, SimpleQuestion.prototype);
-        const parsedItem = item as SimpleQuestion;
-        Object.setPrototypeOf(parsedItem.content, SimpleQuestionContent.prototype);
-    }
-    else if (item.questionType === "MultiQuestion"){
-        Object.setPrototypeOf(item, MultiQuestion.prototype);
-        const parsedItem = item as MultiQuestion;
-        parsedItem.content.forEach((content) => {
-            Object.setPrototypeOf(content, SimpleQuestionContent.prototype);
-        });
-    }
-    item.getParts().forEach((part) => {
-        const p = part as QuestionPartP
-        if(p.partType === "SimpleText"){
-            Object.setPrototypeOf(p, SimpleText.prototype);
-        }
-        else if(p.partType === "RightOrWrong"){
-            Object.setPrototypeOf(p, RightOrWrong.prototype);
-        }
-        else if(p.partType === "PlayableSong"){
-            Object.setPrototypeOf(p, PlayableSong.prototype);
-        }
-        else if(typeof part === "string"){
-            Object.setPrototypeOf(p, String.prototype);
-        }
-    })
-}
-
-
 function loadAppData(): AppData {
     const ret = localStorage.getItem("musicQuizAppData") ? JSON.parse(localStorage.getItem("musicQuizAppData")!) as AppData : new AppData();
     /*
@@ -180,19 +149,6 @@ function loadAppData(): AppData {
                         Object.setPrototypeOf(subAction, SelectAndAnswerQuestion.prototype);
                         Object.setPrototypeOf((subAction as SelectAndAnswerQuestion).selectQuestion, SelectQuestion.prototype);
                         Object.setPrototypeOf((subAction as SelectAndAnswerQuestion).answerQuestion, AnswerQuestion.prototype);
-                        const answerQuestion = (subAction as SelectAndAnswerQuestion).answerQuestion;
-                        answerQuestion.questions.forEach((question) => {
-                            setPrototypeOfQuestion(question);
-                        })
-                        if(answerQuestion.questionToAnswer){
-                            setPrototypeOfQuestion(answerQuestion.questionToAnswer);
-                        }
-                        answerQuestion.leafs.forEach((leaf) => {
-                            Object.setPrototypeOf(leaf, AnswerQuestion.prototype);
-                            if(leaf.questionToAnswer){
-                                setPrototypeOfQuestion(leaf.questionToAnswer);
-                            }
-                        })
                     }
                     else if (subAction.actionType === "FinishGame"){
                         Object.setPrototypeOf(subAction, FinishGame.prototype);
