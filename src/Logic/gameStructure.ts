@@ -1,4 +1,4 @@
-import { MusicQuiz } from "./structure";
+import { MusicQuiz, Question, QuestionPartP } from "./structure";
 
 export class SaveGame {
     saveId: string;
@@ -140,7 +140,7 @@ export class PlayGame extends CompositeGameAction {
 
         new Array(quiz.items.length).fill(0).forEach((_, i) => {
             const currentTeam = teams[i % teams.length];
-            const n = new SelectAndAnswerQuestion()
+            const n = new SelectAndAnswerQuestion(quiz.items)
             n.teamId = currentTeam.id;
             this._actions.push(n);
         });
@@ -181,25 +181,29 @@ export class SelectAndAnswerQuestion extends CompositeGameAction {
     teamId: string;
     selectQuestion: SelectQuestion;
     answerQuestion: AnswerQuestion;
-    constructor() {
+    showQuestionParts: ShowQuestionParts;
+    constructor(questions: Question[]) {
         super();
         this.selectQuestion = new SelectQuestion();
         this.answerQuestion = new AnswerQuestion();
+        this.showQuestionParts = new ShowQuestionParts(questions);
     }
 
     get actions() {
         //if the select question is finished, put the selected question id into the answer question
         if(this.selectQuestion.finished){
             this.answerQuestion.questionId = this.selectQuestion.questionId;
+            this.showQuestionParts.questionId = this.selectQuestion.questionId;
         }
 
         //set the teamId for both actions
         this.selectQuestion.teamId = this.teamId;
         this.answerQuestion.teamId = this.teamId;
+        this.showQuestionParts.teamId = this.teamId;
 
         //TODO create a setter for questionID in the answer question. if we set it, have multiple points fields for each individual question in multiquestion
 
-        return [this.selectQuestion, this.answerQuestion];
+        return [this.selectQuestion, this.showQuestionParts];
     }
 }
 
@@ -221,6 +225,46 @@ export class AnswerQuestion extends TeamAction {
     actionType = "AnswerQuestion";
     questionId: string = "";
     points: number = 0;
+}
+
+export class ShowQuestionParts extends CompositeGameAction {
+    actionType: string = "ShowQuestionParts";
+    allQuestions: Question[];
+    questionParts: ShowQuestionPart[] = [];
+    constructor(allQuestions: Question[]) {
+        super();
+        this.allQuestions = allQuestions;
+    }
+
+    _questionId: string = "";
+    get questionId(){
+        return this._questionId;
+    }
+    set questionId(questionId: string) {
+        this._questionId = questionId;
+        this.questionParts = this.allQuestions.find(q => q.questionId === questionId)!.getParts().map(p => new ShowQuestionPart(p as QuestionPartP));
+    }
+
+    get actions(): GameAction[] {
+        return this.questionParts;
+    }
+
+    set teamId(teamId: string) {
+        this.questionParts.forEach(p => p.teamId = teamId);
+    }
+
+}
+
+export class ShowQuestionPart extends LeafGameAction {
+    actionType: string = "ShowQuestionPart";
+    teamId: string = "";
+    constructor(public part: QuestionPartP){
+        super()
+    }
+    _finished: boolean = false;
+    get finished(): boolean {
+        return this._finished;
+    }
 }
 
 export class FinishGame extends LeafGameAction {

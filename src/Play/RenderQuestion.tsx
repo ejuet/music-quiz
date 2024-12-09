@@ -3,6 +3,34 @@ import { DisplayableText, PlayableSong, Question, QuestionPartP, RightOrWrong, S
 import { RenderDisplayableText } from "../Common/DisplayableText.tsx";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { PlayAudio } from "../Database/DatabaseComponents.tsx";
+import { ShowQuestionPart } from "../Logic/gameStructure.ts";
+
+export function RenderShowQuestionPart({ action }: { action: ShowQuestionPart }) {
+    const part = action.part;
+    return <>
+        <p>Team: {action.teamId}</p>
+        {
+            typeof part === 'string' &&
+            <p>{part}</p>
+        }
+        {
+            part.partType === 'DisplayableText' &&
+            <RenderDisplayableText text={part as DisplayableText} />
+        }
+        {
+            part.partType === 'PlayableSong' &&
+            <PlayAudio filename={(part as PlayableSong).filename} />
+        }
+        {
+            part.partType === 'RightOrWrong' &&
+            <RenderRightOrWrong questionPart={part as RightOrWrong} modifyPoints={() => { }} />
+        }
+        {
+            part.partType === 'ShowAnswerButton' &&
+            <RenderShowAnswerButton questionPart={part as ShowAnswerButton} modifyPoints={() => { }} />
+        }
+    </>
+}
 
 export function RenderQuestion({ question, modifyPoints }: { question: Question, modifyPoints: (points: number) => void }) {
     return <div>

@@ -5,8 +5,39 @@ import { AppData, MultiQuestion, MusicQuiz, PlayableSong, Question, QuestionPart
 import React from "react";
 import { useParams } from "react-router-dom";
 import { category } from "fp-ts";
-import { AnswerQuestion, GameAction, SaveGame, SelectAndAnswerQuestion, SelectQuestion, PlayGame as PlayGameDS, FinishGame } from "./gameStructure.ts";
+import { AnswerQuestion, GameAction, SaveGame, SelectAndAnswerQuestion, SelectQuestion, PlayGame as PlayGameDS, FinishGame, ShowQuestionParts } from "./gameStructure.ts";
 import { PlayGame as PlayG } from "../Play/PlayGame.tsx";
+
+
+function setPrototypeOfQuestion(question: Question){
+    if(question.questionType === "SimpleQuestion"){
+        Object.setPrototypeOf(question, SimpleQuestion.prototype);
+        const parsedQuestion = question as SimpleQuestion;
+        Object.setPrototypeOf(parsedQuestion.content, SimpleQuestionContent.prototype);
+    }
+    else if (question.questionType === "MultiQuestion"){
+        Object.setPrototypeOf(question, MultiQuestion.prototype);
+        const parsedQuestion = question as MultiQuestion;
+        parsedQuestion.content.forEach((content) => {
+            Object.setPrototypeOf(content, SimpleQuestionContent.prototype);
+        });
+    }
+    question.getParts().forEach((part) => {
+        const p = part as QuestionPartP
+        if(p.partType === "SimpleText"){
+            Object.setPrototypeOf(p, SimpleText.prototype);
+        }
+        else if(p.partType === "RightOrWrong"){
+            Object.setPrototypeOf(p, RightOrWrong.prototype);
+        }
+        else if(p.partType === "PlayableSong"){
+            Object.setPrototypeOf(p, PlayableSong.prototype);
+        }
+        else if(typeof part === "string"){
+            Object.setPrototypeOf(p, String.prototype);
+        }
+    })
+}
 
 function loadAppData(): AppData {
     const ret = localStorage.getItem("musicQuizAppData") ? JSON.parse(localStorage.getItem("musicQuizAppData")!) as AppData : new AppData();
@@ -149,6 +180,16 @@ function loadAppData(): AppData {
                         Object.setPrototypeOf(subAction, SelectAndAnswerQuestion.prototype);
                         Object.setPrototypeOf((subAction as SelectAndAnswerQuestion).selectQuestion, SelectQuestion.prototype);
                         Object.setPrototypeOf((subAction as SelectAndAnswerQuestion).answerQuestion, AnswerQuestion.prototype);
+
+                        // set prototype of ShowQuestionParts
+                        const showQuestionParts = (subAction as SelectAndAnswerQuestion).showQuestionParts;
+                        Object.setPrototypeOf(showQuestionParts, ShowQuestionParts.prototype);
+                        showQuestionParts.questionParts.forEach((part) => {
+                            Object.setPrototypeOf(part, ShowQuestionParts.prototype);
+                        });
+                        showQuestionParts.allQuestions.forEach((question) => {
+                            setPrototypeOfQuestion(question);
+                        })
                     }
                     else if (subAction.actionType === "FinishGame"){
                         Object.setPrototypeOf(subAction, FinishGame.prototype);

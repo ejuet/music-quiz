@@ -1,8 +1,8 @@
 import { Button } from "react-bootstrap";
 import React from "react";
 import { useAppDataContext, useCurrentGame, useCurrentQuiz } from "../Logic/AppDataContext.tsx";
-import { AnswerQuestion, FinishGame, GameAction, SelectQuestion, TeamAction } from "../Logic/gameStructure.ts";
-import { RenderQuestion } from "./RenderQuestion.tsx";
+import { AnswerQuestion, FinishGame, GameAction, SelectQuestion, ShowQuestionPart, TeamAction } from "../Logic/gameStructure.ts";
+import { RenderQuestion, RenderShowQuestionPart } from "./RenderQuestion.tsx";
 
 export function PlayGame(){
     const currentGame = useCurrentGame();
@@ -40,6 +40,10 @@ function DisplayAction({ action }: { action:GameAction }) {
         {
             action.actionType === "AnswerQuestion" &&
             <AnswerQuestionAction action={action as AnswerQuestion} />
+        }
+        {
+            action.actionType === "ShowQuestionPart" &&
+            <RenderShowQuestionPart action={action as ShowQuestionPart} />
         }
         {
             action.actionType === "FinishGame" &&
