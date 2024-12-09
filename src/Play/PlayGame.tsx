@@ -90,7 +90,7 @@ function AnswerQuestionAction({ action }: { action: AnswerQuestion }) {
     if(!currentQuiz){
         return <></>;
     }
-    const currentQuestion = currentQuiz.items.find(q => q.questionId === action.questionId);
+    const currentQuestion = action.questionToAnswer
     return <div>
         <h1>Answer Question</h1>
         <p>Team <b>{team?.name}</b> has to answer the question!</p>
@@ -99,6 +99,8 @@ function AnswerQuestionAction({ action }: { action: AnswerQuestion }) {
             currentQuestion ?
             <RenderQuestion question={currentQuestion} modifyPoints={(points)=>{
                 action.points = points;
+                console.log(points);
+                console.log(action);
                 setAppData(appData);
             }} />
             :
