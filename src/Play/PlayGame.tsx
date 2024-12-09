@@ -16,6 +16,8 @@ export function PlayGame(){
     }
     const nextAction = currentGame.getNextAction();
 
+    const nextActions = currentGame.getRemainingActions();
+
     return <>
         {
             currentGame.gameActions.length === 0  &&
@@ -24,9 +26,9 @@ export function PlayGame(){
                 setAppData(appData);
             }}>Start Game</Button>
         }
+        <p>{nextActions.length} remaining Actions</p>
         {
-            nextAction &&
-            <DisplayAction action={nextAction} />
+            nextActions.map((action, index) => <DisplayAction key={index} action={action} />)
         }
     </>
 }

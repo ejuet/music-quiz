@@ -8,7 +8,6 @@ import { ShowQuestionPart } from "../Logic/gameStructure.ts";
 export function RenderShowQuestionPart({ action }: { action: ShowQuestionPart }) {
     const part = action.part;
     return <>
-        <p>Team: {action.teamId}</p>
         {
             typeof part === 'string' &&
             <p>{part}</p>

@@ -37,6 +37,16 @@ export class SaveGame {
         return leafActions.find(a => !a.finished);
     }
 
+    getRemainingActions(){
+        const leafActions = this.getLeafActions();
+        const firstUnfinishedIndex = leafActions.findIndex(a => !a.finished);
+        if(firstUnfinishedIndex === -1){
+            return [];
+        }
+        console.log(firstUnfinishedIndex);
+        return leafActions.slice(firstUnfinishedIndex);
+    }
+
     getTeam(teamId: string) {
         return this.teams.find(t => t.id === teamId);
     }

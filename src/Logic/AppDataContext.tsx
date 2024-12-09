@@ -1,7 +1,7 @@
 // ---------- Save to Cache ----------
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { AppData, MultiQuestion, MusicQuiz, PlayableSong, Question, QuestionPartP, RightOrWrong, SimpleQuestion, SimpleQuestionContent, SimpleText } from "./structure.ts";
+import { AppData, MultiQuestion, MusicQuiz, PageBreak, PlayableSong, Question, QuestionPartP, RightOrWrong, SimpleQuestion, SimpleQuestionContent, SimpleText } from "./structure.ts";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { category } from "fp-ts";
@@ -35,6 +35,9 @@ function setPrototypeOfQuestion(question: Question){
         }
         else if(typeof part === "string"){
             Object.setPrototypeOf(p, String.prototype);
+        }
+        else if(p.partType === "PageBreak"){
+            Object.setPrototypeOf(p, PageBreak.prototype);
         }
     })
 }

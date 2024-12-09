@@ -84,9 +84,13 @@ export class ShowAnswerButton extends QuestionPartP {
     RightOrWrong: RightOrWrong;
 }
 
+export class PageBreak extends QuestionPartP {
+    partType: string = "PageBreak";
+}
+
 export type DisplayableText = SimpleText | string;
 
-export type QuestionPart = SimpleText | PlayableSong | RightOrWrong | DisplayableText | ShowAnswerButton;
+export type QuestionPart = SimpleText | PlayableSong | RightOrWrong | DisplayableText | ShowAnswerButton | PageBreak;
 
 // ---------- Define the "Question" type ----------
 
@@ -136,7 +140,7 @@ export class SimpleQuestionContent extends QuestionContent {
         showAnswerButton.RightOrWrong = new RightOrWrong();
         showAnswerButton.RightOrWrong.pointsIfRight = this.pointsIfRight;
         showAnswerButton.RightOrWrong.pointsIfWrong = 0;
-        return [this.question, this.song, showAnswerButton];
+        return [this.question, this.song, showAnswerButton, new PageBreak()];
     }
 
     setPoints(points: number) {
