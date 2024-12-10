@@ -97,6 +97,8 @@ export type DisplayableText = SimpleText | string;
 
 export type QuestionPart = SimpleText | PlayableSong | RightOrWrong | DisplayableText | ShowAnswerButton | PageBreak | EnterCustomPoints;
 
+export const questionPartTypes = [SimpleText, PlayableSong, RightOrWrong, ShowAnswerButton, PageBreak, EnterCustomPoints];
+
 // ---------- Define the "Question" type ----------
 
 export abstract class QuestionContent{
@@ -221,7 +223,30 @@ export class ChangePointsManually extends BasicQuestion {
     }
 }
 
-export const questionTypes = [SimpleQuestion, MultiQuestion, ChangePointsManually];
+export class CustomQuestion extends BasicQuestion {
+    questionType: string = "CustomQuestion";
+    content: QuestionPartP[];
+    points: number;
+
+    constructor() {
+        super();
+        this.content = [];
+    }
+
+    getPoints(): number {
+        return this.points;
+    }
+
+    getParts(): QuestionPartP[] {
+        return this.content;
+    }
+
+    setPoints(points: number) {
+        this.points = points;
+    }
+}
+
+export const questionTypes = [SimpleQuestion, MultiQuestion, ChangePointsManually, CustomQuestion];
 
 //export type Question = QuestionWithParts | SimpleQuestion | OneQuestionPart;
 

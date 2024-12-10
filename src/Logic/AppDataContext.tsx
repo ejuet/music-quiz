@@ -1,7 +1,7 @@
 // ---------- Save to Cache ----------
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { AppData, ChangePointsManually, EnterCustomPoints, MultiQuestion, MusicQuiz, PageBreak, PlayableSong, Question, QuestionPartP, RightOrWrong, SimpleQuestion, SimpleQuestionContent, SimpleText } from "./structure.ts";
+import { AppData, ChangePointsManually, CustomQuestion, EnterCustomPoints, MultiQuestion, MusicQuiz, PageBreak, PlayableSong, Question, QuestionPartP, RightOrWrong, SimpleQuestion, SimpleQuestionContent, SimpleText } from "./structure.ts";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { category } from "fp-ts";
@@ -45,6 +45,9 @@ function setPrototypeOfQuestion(question: Question){
     }
     else if (question.questionType === "ChangePointsManually"){
         Object.setPrototypeOf(question, ChangePointsManually.prototype);
+    }
+    else if (question.questionType === "CustomQuestion"){
+        Object.setPrototypeOf(question, CustomQuestion.prototype);
     }
     question.getParts().forEach((part) => {
         setPrototypeOfQuestionPartP(part as QuestionPartP)

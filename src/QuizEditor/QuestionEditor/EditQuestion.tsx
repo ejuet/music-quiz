@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, ButtonGroup, Card, Dropdown, Form } from "react-bootstrap";
-import { DisplayableText, MultiQuestion, PlayableSong, Question, QuestionPart, QuestionPartP, RightOrWrong, SimpleQuestion, SimpleQuestionContent, SimpleText } from "../../Logic/structure.ts";
+import { CustomQuestion, DisplayableText, MultiQuestion, PlayableSong, Question, QuestionPart, QuestionPartP, questionPartTypes, RightOrWrong, SimpleQuestion, SimpleQuestionContent, SimpleText } from "../../Logic/structure.ts";
 import { isRight } from "fp-ts/lib/Either";
 import * as t from 'io-ts';
 import { useAppDataContext, useCurrentQuiz } from "../../Logic/AppDataContext.tsx";
@@ -15,7 +15,8 @@ export function EditQuestion({ question }: { question: Question }) {
         [key: string]: (question: Question) => JSX.Element
     } = {
         'SimpleQuestion': (question) => <SimpleQuestionEditor question={(question as SimpleQuestion).content} />,
-        'MultiQuestion': (question) => <MultiQuestionEditor question={(question as MultiQuestion)} />
+        'MultiQuestion': (question) => <MultiQuestionEditor question={(question as MultiQuestion)} />,
+        'CustomQuestion': (question) => <CustomQuestionEditor question={(question as CustomQuestion)} />
     }
     return <Card className="p-2">
         <small>Type: {question.questionType}</small>
@@ -42,20 +43,80 @@ export function EditQuestion({ question }: { question: Question }) {
     </Card>
 }
 
-function EditQuestionPart({ question, partIndex }: { question: Question, partIndex: number }) {
-    const part = question.getParts()[partIndex] as QuestionPartP;
+function CustomQuestionEditor({ question }: { question: CustomQuestion }) {
+    const { setAppData, appData } = useAppDataContext();
     return <>
         {
-            part instanceof SimpleText &&
-            <EditText text={part as DisplayableText} onChange={(value) => part.text = value} />
+            question.content.map((part, index) => {
+                return <div key={index}>
+                    <EditQuestionPart question={question} partIndex={index} />
+                    <DeleteButton onDelete={() => {
+                        question.content = question.content.filter((item) => item !== part);
+                        setAppData(appData);
+                    }} customMessage={"Are you sure you want to delete " + part.partType + "?"} />
+                </div>
+            })
+        }
+        <AddQuestionPartButton question={question} />
+    </>
+}
+
+function AddQuestionPartButton({ question }: { question: CustomQuestion }) {
+    const options = questionPartTypes
+    const optionMap = options.map((option) => {
+        return {
+            name: option.name,
+            typ: option
+        }
+    });
+    const { setAppData, appData } = useAppDataContext();
+    const [selectedPartType, setSelectedPartType] = useState(optionMap[0]);
+
+    return (
+        <ButtonGroup>
+            <Button onClick={() => {
+                question.content.push(new selectedPartType.typ());
+                setAppData(appData);
+            }}>Add Part</Button>
+            <Dropdown>
+                <Dropdown.Toggle id="dropdown-basic">
+                    {selectedPartType.name}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                    {
+                        optionMap.map((option) => {
+                            return <Dropdown.Item key={option.name} onClick={() => setSelectedPartType(option)}>{option.name}</Dropdown.Item>
+                        })
+                    }
+                </Dropdown.Menu>
+            </Dropdown>
+        </ButtonGroup>
+    );
+}
+
+function EditQuestionPart({ question, partIndex }: { question: Question, partIndex: number }) {
+    const part = question.getParts()[partIndex] as QuestionPartP;
+    const questionPartEditors: {
+        [key: string]: (part: QuestionPartP, partIndex: number) => JSX.Element
+    } = {
+        'SimpleText': (part, partIndex) => <EditText text={part as DisplayableText} onChange={(value) => (part as SimpleText).text = value} />,
+        'RightOrWrong': (part, partIndex) => <>
+            <Form.Label>Points if right</Form.Label>
+            <EditNumber number={(part as RightOrWrong).pointsIfRight || 0} onChange={(value) => (question.getParts()[partIndex] as RightOrWrong).pointsIfRight = value} />
+            <Form.Label>Points if wrong</Form.Label>
+            <EditNumber number={(part as RightOrWrong).pointsIfWrong || 0} onChange={(value) => (question.getParts()[partIndex] as RightOrWrong).pointsIfWrong = value} />
+        </>,
+        'PlayableSong': (part, partIndex) => <EditSong song={part as PlayableSong} onChange={(value) => question.getParts()[partIndex] = value} />
+    }
+    return <>
+        {
+            questionPartEditors.hasOwnProperty(part.partType) &&
+            questionPartEditors[part.partType](part, partIndex)
         }
         {
-            part.partType === 'PlayableSong' &&
-            <EditSong song={part as PlayableSong} onChange={(value) => question.getParts()[partIndex] = value} />
-        }
-        {
-            part.partType === 'RightOrWrong' &&
-            <EditNumber number={(part as RightOrWrong).pointsIfRight} onChange={(value) => (question.getParts()[partIndex] as RightOrWrong).pointsIfRight = value} />
+            !questionPartEditors.hasOwnProperty(part.partType) &&
+            <p>{part.partType}</p>
         }
     </>
 }
