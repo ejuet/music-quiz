@@ -1,7 +1,7 @@
 import * as t from 'io-ts';
 import { isRight } from 'fp-ts/Either';
 import { cons } from 'fp-ts/lib/ReadonlyNonEmptyArray';
-import { SaveGame } from './gameStructure.ts';
+import { SaveGame, Team } from './gameStructure.ts';
 //import { questionWrappers, QuestionWrapper, QuestionWrapperFactory } from './QuestionWrapper.ts';
 
 export class AppData {
@@ -26,6 +26,7 @@ export class AppData {
     addSaveGame(quizId: string): SaveGame {
         const game = new SaveGame();
         game.quizId = quizId;
+        game.teams = [new Team()];
         this.saveGames.push(game);
         return game;
     }
