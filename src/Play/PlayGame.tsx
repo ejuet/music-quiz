@@ -24,7 +24,7 @@ function WithSidebar({ children, sidebar, header = <></> }: { children: React.Re
                     <FaBars />
                 </Button>
             </div>
-            <div style={{ width: sidebarWidth+"px", position: "absolute", right: 0, height: "100%" }}>
+            <div style={{ width: sidebarWidth+"px", position: "absolute", right: 0 }}>
                 <div style={{ opacity: showSidebar ? 1 : 0, transition: "opacity 0.3s" }}>
                     {sidebar}
                 </div>
@@ -114,7 +114,7 @@ export function PlayGame(){
 
     return <>
         <WithGameSidebar modifyIndex={(i)=>{setModifiedIndex(i)}}>
-            <div style={{ display: "flex", height: "100vh" }}>
+            <div style={{ display: "flex", height: "100vh", overflow: "clip" }}>
                 <div style={{
                     display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, justifyContent: "center",
                     textAlign: "center"
