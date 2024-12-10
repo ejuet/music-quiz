@@ -40,14 +40,18 @@ function RenderEnterCustomPoints({ action }: { action: ShowQuestionPart }) {
     const { appData, setAppData } = useAppDataContext();
     return <>
         <Form.Control
-            value={action.indPoints}
+            defaultValue={action.indPoints}
             onChange={(e) => {
                 const givenPoints = parseInt(e.target.value);
                 if(!isNaN(givenPoints)){
                     action.indPoints = givenPoints;
                     setAppData(appData);
                 }
+                if(e.target.value !== '-'){
+                    e.target.value = action.indPoints.toString();
+                }
             }}
+            style={{ textAlign: 'center' }}
         />
     </>
 }
