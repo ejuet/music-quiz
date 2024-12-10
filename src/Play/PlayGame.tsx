@@ -14,7 +14,6 @@ export function PlayGame(){
     if(!currentQuiz){
         return <h1>Quiz not found</h1>;
     }
-    const nextAction = currentGame.getNextAction();
 
     const nextActions = currentGame.getRemainingActions();
 

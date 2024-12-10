@@ -43,7 +43,6 @@ export class SaveGame {
         if(firstUnfinishedIndex === -1){
             return [];
         }
-        console.log(firstUnfinishedIndex);
         return leafActions.slice(firstUnfinishedIndex);
     }
 
