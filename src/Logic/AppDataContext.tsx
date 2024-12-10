@@ -5,7 +5,7 @@ import { AppData, MultiQuestion, MusicQuiz, PageBreak, PlayableSong, Question, Q
 import React from "react";
 import { useParams } from "react-router-dom";
 import { category } from "fp-ts";
-import { AnswerQuestion, GameAction, SaveGame, SelectAndAnswerQuestion, SelectQuestion, PlayGame as PlayGameDS, FinishGame, ShowQuestionParts, ShowQuestionPart } from "./gameStructure.ts";
+import { GameAction, SaveGame, SelectAndAnswerQuestion, SelectQuestion, PlayGame as PlayGameDS, FinishGame, ShowQuestionParts, ShowQuestionPart } from "./gameStructure.ts";
 import { PlayGame as PlayG } from "../Play/PlayGame.tsx";
 
 
@@ -71,7 +71,6 @@ function loadAppData(): AppData {
                     if (subAction.actionType === "SelectAndAnswerQuestion"){
                         Object.setPrototypeOf(subAction, SelectAndAnswerQuestion.prototype);
                         Object.setPrototypeOf((subAction as SelectAndAnswerQuestion).selectQuestion, SelectQuestion.prototype);
-                        Object.setPrototypeOf((subAction as SelectAndAnswerQuestion).answerQuestion, AnswerQuestion.prototype);
 
                         // set prototype of ShowQuestionParts
                         const showQuestionParts = (subAction as SelectAndAnswerQuestion).showQuestionParts;

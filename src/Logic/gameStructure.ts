@@ -221,25 +221,21 @@ export class SelectAndAnswerQuestion extends CompositeGameAction {
     actionType = "SelectAndAnswerQuestion";
     teamId: string;
     selectQuestion: SelectQuestion;
-    answerQuestion: AnswerQuestion;
     showQuestionParts: ShowQuestionParts;
     constructor(questions: Question[]) {
         super();
         this.selectQuestion = new SelectQuestion();
-        this.answerQuestion = new AnswerQuestion();
         this.showQuestionParts = new ShowQuestionParts(questions);
     }
 
     get actions() {
         //if the select question is finished, put the selected question id into the answer question
         if(this.selectQuestion.finished){
-            this.answerQuestion.questionId = this.selectQuestion.questionId;
             this.showQuestionParts.questionId = this.selectQuestion.questionId;
         }
 
         //set the teamId for both actions
         this.selectQuestion.teamId = this.teamId;
-        this.answerQuestion.teamId = this.teamId;
         this.showQuestionParts.teamId = this.teamId;
 
         //TODO create a setter for questionID in the answer question. if we set it, have multiple points fields for each individual question in multiquestion
@@ -264,15 +260,6 @@ export class SelectQuestion extends TeamAction {
     }
 }
 
-export class AnswerQuestion extends TeamAction {
-    finished: boolean = false;
-    actionType = "AnswerQuestion";
-    questionId: string = "";
-    points: number = 0;
-    setFinished(finished: boolean) {
-        this.finished = finished;
-    }
-}
 
 export class ShowQuestionParts extends CompositeGameAction {
     actionType: string = "ShowQuestionParts";
