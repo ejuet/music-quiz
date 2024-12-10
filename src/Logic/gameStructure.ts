@@ -21,6 +21,10 @@ export class SaveGame {
         this.gameActions = [new PlayGame(quiz, this.teams)];
     }
 
+    getCurrentGame() {
+        return this.gameActions.find(a => a instanceof PlayGame) as PlayGame;
+    }
+
     getCurrentPoints(teamId: string) {
         const playGame = this.gameActions.find(a => a.actionType === "PlayGame") as PlayGame;
         return playGame.getCurrentPoints(teamId);
@@ -137,14 +141,14 @@ export abstract class GameAction {
     abstract getLeafActions(): LeafGameAction[];
 }
 
-abstract class LeafGameAction extends GameAction {
+export abstract class LeafGameAction extends GameAction {
     abstract setFinished(finished: boolean);
     getLeafActions() {
         return [this];
     }
 }
 
-abstract class CompositeGameAction extends GameAction {
+export abstract class CompositeGameAction extends GameAction {
     abstract get actions(): GameAction[];
     get finished() {
         return this.actions.every(a => a.finished);

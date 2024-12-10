@@ -1,7 +1,7 @@
 import { Button } from "react-bootstrap";
 import React from "react";
 import { useAppDataContext, useCurrentGame, useCurrentQuiz } from "../Logic/AppDataContext.tsx";
-import { FinishGame, GameAction, SelectQuestion, ShowQuestionPart, TeamAction } from "../Logic/gameStructure.ts";
+import { CompositeGameAction, FinishGame, GameAction, LeafGameAction, SelectQuestion, ShowQuestionPart, TeamAction } from "../Logic/gameStructure.ts";
 import { RenderShowQuestionPart } from "./RenderQuestion.tsx";
 import { QuizGrid } from "../QuizEditor/Grid.tsx";
 import { useState } from "react";
@@ -10,7 +10,7 @@ import { FaBars } from "react-icons/fa";
 
 function WithSidebar({ children, sidebar, header = <></> }: { children: React.ReactNode, sidebar: React.ReactNode, header?: React.ReactNode }) {
     const [showSidebar, setShowSidebar] = useState(false);
-    const sidebarWidth = 250;
+    const sidebarWidth = 350;
     const menuButtonSpace = 50;
     const currentSidebarWidth = showSidebar ? sidebarWidth : menuButtonSpace;
     return <div style={{ display: "flex" }}>
@@ -36,16 +36,47 @@ function WithSidebar({ children, sidebar, header = <></> }: { children: React.Re
     </div>
 }
 
+function RenderActionTree({ action, indent = 0 }: { action: GameAction, indent?: number }) {
+    return <div>
+        <div style={{ marginLeft: indent * 20 }}>
+            {action.actionType}
+            {
+                action instanceof CompositeGameAction &&
+                action.actions.map((subAction, index) => <RenderActionTree key={index} action={subAction} indent={indent + 1} />)
+            }
+        </div>
+    </div>
+}
+
 function WithGameSidebar({ children }: { children: React.ReactNode }) {
     const currentGame = useCurrentGame();
     const currentQuiz = useCurrentQuiz();
+    if(!currentGame || !currentQuiz) {
+        return <h1>Game or Quiz not found</h1>;
+    }
     return <WithSidebar header={<h2>Game</h2>} sidebar={<div>
-        <p>Current Game: {currentGame?.name}</p>
-        <p>Current Quiz: {currentQuiz?.name}</p>
+        <CurrentPoints />
+        <p><b>TODO</b> allow going back to other questions</p>
+        {
+            <RenderActionTree action={currentGame.getCurrentGame()} />
+        }
     </div>}>
-
         {children}
     </WithSidebar>
+}
+
+function CurrentPoints(){
+    const currentGame = useCurrentGame();
+    if(!currentGame){
+        return <></>;
+    }
+    return <div>
+        <ul>
+            {
+                currentGame.teams.map(team => <li>Team <b>{team.name}</b>: {currentGame.getCurrentPoints(team.id)} points</li>)
+            }
+        </ul>
+    </div>
 }
 
 export function PlayGame(){
