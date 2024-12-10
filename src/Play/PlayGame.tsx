@@ -6,6 +6,7 @@ import { RenderShowQuestionPart } from "./RenderQuestion.tsx";
 import { QuizGrid } from "../QuizEditor/Grid.tsx";
 import { useState } from "react";
 import { FaBars } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 
 function WithSidebar({ children, sidebar, header = <></> }: { children: React.ReactNode, sidebar: React.ReactNode, header?: React.ReactNode }) {
@@ -18,8 +19,7 @@ function WithSidebar({ children, sidebar, header = <></> }: { children: React.Re
             <div style={{ width: (sidebarWidth-menuButtonSpace)+"px", position: "absolute", right: menuButtonSpace }}>
                 {header}
             </div>
-            <div style={{ display: "flex", justifyContent: "flex-end", marginRight: "5px" }}>
-
+            <div style={{ display: "flex", justifyContent: "flex-end", marginRight: "5px", marginTop: "5px" }}>
                 <Button onClick={() => setShowSidebar(!showSidebar)}>
                     <FaBars />
                 </Button>
@@ -64,6 +64,7 @@ function WithGameSidebar({ children, modifyIndex }: { children: React.ReactNode,
     }
     const game = currentGame.getCurrentGame();
     return <WithSidebar header={<h2>Game</h2>} sidebar={<div>
+        <Link to={"/quiz/"+currentQuiz.id}>Go To Quiz Page</Link>
         {
             game &&
             <CurrentPoints />
@@ -113,7 +114,7 @@ export function PlayGame(){
 
     return <>
         <WithGameSidebar modifyIndex={(i)=>{setModifiedIndex(i)}}>
-            <div style={{ display: "flex", height: "89vh" }}>
+            <div style={{ display: "flex", height: "100vh" }}>
                 <div style={{
                     display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, justifyContent: "center",
                     textAlign: "center"
