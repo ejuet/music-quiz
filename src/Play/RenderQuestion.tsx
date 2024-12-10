@@ -32,14 +32,17 @@ export function RenderShowQuestionPart({ action }: { action: ShowQuestionPart })
     </>
 }
 
-function RenderRightOrWrong({ questionPart, modifyPoints }: { questionPart: RightOrWrong, modifyPoints: (points: number) => void }) {
+function RenderRightOrWrong({ questionPart, action }: { questionPart: RightOrWrong, action: ShowQuestionPart }) {
+    const { appData, setAppData } = useAppDataContext();
     return <>
         <ButtonGroup>
             <Button variant="success" onClick={() => {
-                modifyPoints(questionPart.pointsIfRight);
+                action.indPoints = questionPart.pointsIfRight;
+                setAppData(appData);
             }}>Right Answer (+{questionPart.pointsIfRight})</Button>
             <Button variant="danger" onClick={() => {
-                modifyPoints(questionPart.pointsIfWrong);
+                action.indPoints = questionPart.pointsIfWrong;
+                setAppData(appData);
             }}>Wrong Answer (-{questionPart.pointsIfWrong})</Button>
         </ButtonGroup>
     </>
@@ -47,16 +50,12 @@ function RenderRightOrWrong({ questionPart, modifyPoints }: { questionPart: Righ
 
 function RenderShowAnswerButton({ questionPart, action }: { questionPart: ShowAnswerButton, action: ShowQuestionPart }) {
     const [showAnswer, setShowAnswer] = React.useState(false);
-    const { appData, setAppData } = useAppDataContext();
     return <>
         {
             showAnswer ?
             <>
                 <RenderDisplayableText text={questionPart.answer} />
-                <RenderRightOrWrong questionPart={questionPart.RightOrWrong} modifyPoints={(p)=>{
-                    action.indPoints = p;
-                    setAppData(appData);
-                }} />
+                <RenderRightOrWrong questionPart={questionPart.RightOrWrong} action={action} />
             </>
             :
             <Button onClick={() => setShowAnswer(true)}>Show Answer</Button>
