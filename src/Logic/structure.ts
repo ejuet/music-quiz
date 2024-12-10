@@ -207,7 +207,7 @@ export class ChangePointsManually extends BasicQuestion {
     constructor() {
         super();
         this.text = new SimpleText();
-        this.text.text = "Enter a custom amount of points below."
+        this.text.text = "Describe the custom question for your players here. You will be able to give a custom amount of points to the current team."
     }
 
     getParts(): QuestionPart[] {

@@ -27,13 +27,9 @@ export function EditQuestion({ question }: { question: Question }) {
         {
             !questionEditors.hasOwnProperty(question.questionType) &&
             <>
-            <p>There is no custom editor for question type {question.questionType}.</p>
             {
                 question.getParts().map((part, index) => {
                     return <div key={index}>
-                        {
-                            JSON.stringify(part)
-                        }
                         <EditQuestionPart question={question} partIndex={index} />
                     </div>
                 })
