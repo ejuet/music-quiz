@@ -1,6 +1,6 @@
 import React from "react";
-import { useAppDataContext, useCurrentGame } from "../Logic/AppDataContext.tsx";
-import { Button, ButtonGroup, Form, ListGroup } from "react-bootstrap";
+import { useAppDataContext, useCurrentGame, useCurrentQuiz } from "../Logic/AppDataContext.tsx";
+import { Alert, Button, ButtonGroup, Form, ListGroup } from "react-bootstrap";
 import { formatMyDate } from "../Common/formatDate.ts";
 import { Player, Team } from "../Logic/gameStructure.ts";
 import DeleteButton from "../Common/DeleteButton.tsx";
@@ -55,7 +55,27 @@ function Teams() {
             currentGame.teams.push(newTeam);
             setAppData(appData);
         }}>New Team</Button>
+        <TeamCountAlert />
     </>
+}
+
+function TeamCountAlert(){
+    const currentGame = useCurrentGame();
+    const currentQuiz = useCurrentQuiz();
+    if(!currentGame || !currentQuiz){
+        return <></>;
+    }
+    return <div className="my-2">
+        {
+            currentQuiz.items.length % currentGame.teams.length === 0 ? <Alert variant="success">
+                There are {currentQuiz.items.length} questions and {currentGame.teams.length} teams.
+                There will be {currentQuiz.items.length / currentGame.teams.length} questions per team.
+            </Alert> : <Alert variant="warning">
+                There are {currentQuiz.items.length} questions and {currentGame.teams.length} teams.
+                The number of questions should be a multiple of the number of teams.
+            </Alert>
+        }
+    </div>
 }
 
 function TeamComponent({ teamId }: { teamId: string }) {
@@ -87,10 +107,17 @@ function TeamComponent({ teamId }: { teamId: string }) {
                 }} customMessage={"Do you really want to delete player "+player.name+"?"} />
             </div>)
         }
-        <Button onClick={() => {
-            const newPlayer = new Player()
-            team.players.push(newPlayer);
-            setAppData(appData);
-        }}>New Player</Button>
+        <br />
+        <ButtonGroup>
+            <Button onClick={() => {
+                const newPlayer = new Player()
+                team.players.push(newPlayer);
+                setAppData(appData);
+            }}>New Player</Button>
+            <DeleteButton onDelete={() => {
+                currentGame.teams = currentGame.teams.filter(t => t.id !== team.id);
+                setAppData(appData);
+            }} customMessage={"Do you really want to delete team "+team.name+"?"} />
+        </ButtonGroup>
     </>
 }
