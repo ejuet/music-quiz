@@ -4,9 +4,11 @@ import { RenderDisplayableText } from "../Common/DisplayableText.tsx";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { PlayAudio } from "../Database/DatabaseComponents.tsx";
 import { ShowQuestionPart } from "../Logic/gameStructure.ts";
+import { useAppDataContext } from "../Logic/AppDataContext.tsx";
 
 export function RenderShowQuestionPart({ action }: { action: ShowQuestionPart }) {
     const part = action.part;
+    const { appData, setAppData } = useAppDataContext();
     return <>
         {
             typeof part === 'string' &&
@@ -26,7 +28,10 @@ export function RenderShowQuestionPart({ action }: { action: ShowQuestionPart })
         }
         {
             part.partType === 'ShowAnswerButton' &&
-            <RenderShowAnswerButton questionPart={part as ShowAnswerButton} modifyPoints={() => { }} />
+            <RenderShowAnswerButton questionPart={part as ShowAnswerButton} modifyPoints={(p) => {
+                action.indPoints = p
+                setAppData(appData);
+            }} />
         }
     </>
 }

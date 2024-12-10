@@ -159,8 +159,10 @@ export class PlayGame extends CompositeGameAction {
     getCurrentPoints(teamId: string) {
         var points = 0
         this._actions.forEach((a, i) => {
-            if(a instanceof SelectAndAnswerQuestion && a.teamId === teamId){
-                points += a.answerQuestion.points;
+            if(a instanceof SelectAndAnswerQuestion){
+                if(a.teamId === teamId){
+                    points += a.showQuestionParts.getPoints();
+                }
             }
         })
         return points;
@@ -251,8 +253,10 @@ export class ShowQuestionParts extends CompositeGameAction {
         return this._questionId;
     }
     set questionId(questionId: string) {
-        this._questionId = questionId;
-        this.questionParts = this.allQuestions.find(q => q.questionId === questionId)!.getParts().map(p => new ShowQuestionPart(p as QuestionPartP));
+        if(this._questionId !== questionId){
+            this._questionId = questionId;
+            this.questionParts = this.allQuestions.find(q => q.questionId === questionId)!.getParts().map(p => new ShowQuestionPart(p as QuestionPartP));
+        }
     }
 
     get actions(): GameAction[] {
@@ -261,6 +265,11 @@ export class ShowQuestionParts extends CompositeGameAction {
 
     set teamId(teamId: string) {
         this.questionParts.forEach(p => p.teamId = teamId);
+    }
+
+    getPoints(){
+        const ret =  this.questionParts.map(p => p.indPoints).reduce((acc, points) => acc + points, 0);
+        return ret;
     }
 
 }
@@ -275,6 +284,7 @@ export class ShowQuestionPart extends LeafGameAction {
     get finished(): boolean {
         return this._finished;
     }
+    indPoints: number = 0;
 }
 
 export class FinishGame extends LeafGameAction {
