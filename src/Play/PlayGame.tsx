@@ -25,7 +25,6 @@ export function PlayGame(){
                 setAppData(appData);
             }}>Start Game</Button>
         }
-        <p>{nextActions.length} remaining Actions</p>
         {
             nextActions.map((action, index) => <DisplayAction key={index} action={action} />)
         }
