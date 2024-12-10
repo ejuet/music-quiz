@@ -79,6 +79,10 @@ function StartPage(){
       There might be breaking changes anytime and the quizzes you create might be incompatible with future versions of the app.
       Keep backups of your quizzes outside the app if you want to keep them.
       </p>
+      <b>Known Issues</b>
+      <ul>
+        <li>Please avoid editing or playing games in multiple tabs for now as you might overwrite some changes that happened in another tab.</li>
+      </ul>
     </Alert>
     <h2>Coming Soon</h2>
     <ul>
