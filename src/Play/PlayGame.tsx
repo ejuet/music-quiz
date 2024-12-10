@@ -8,7 +8,7 @@ import { useState } from "react";
 import { FaBars } from "react-icons/fa";
 
 
-function WithSidebar({ children, sidebar,  }: { children: React.ReactNode, sidebar: React.ReactNode }) {
+function WithSidebar({ children, sidebar, header = <></> }: { children: React.ReactNode, sidebar: React.ReactNode, header?: React.ReactNode }) {
     const [showSidebar, setShowSidebar] = useState(false);
     const sidebarWidth = 250;
     const menuButtonSpace = 50;
@@ -16,7 +16,7 @@ function WithSidebar({ children, sidebar,  }: { children: React.ReactNode, sideb
     return <div style={{ display: "flex" }}>
         <div style={{ width: currentSidebarWidth+"px", transition: "width 0.3s", position: "relative" }}>
             <div style={{ width: (sidebarWidth-menuButtonSpace)+"px", position: "absolute", right: menuButtonSpace }}>
-                <h2>Menu</h2>
+                {header}
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end", marginRight: "5px" }}>
 
@@ -39,8 +39,7 @@ function WithSidebar({ children, sidebar,  }: { children: React.ReactNode, sideb
 function WithGameSidebar({ children }: { children: React.ReactNode }) {
     const currentGame = useCurrentGame();
     const currentQuiz = useCurrentQuiz();
-    return <WithSidebar sidebar={<div>
-        <h2>Game</h2>
+    return <WithSidebar header={<h2>Game</h2>} sidebar={<div>
         <p>Current Game: {currentGame?.name}</p>
         <p>Current Quiz: {currentQuiz?.name}</p>
     </div>}>
