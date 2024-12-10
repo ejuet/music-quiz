@@ -8,39 +8,24 @@ import { useState } from "react";
 import { FaBars } from "react-icons/fa";
 
 
-const Sidebar = ({ isOpen, toggleSidebar }: { isOpen: boolean, toggleSidebar: () => void }) => {
-    return (
-        <div className={`sidebar ${isOpen ? "open" : ""}`} style={{ position: "absolute", top: 0, left: 0, height: '100%', width: '250px', backgroundColor: '#f8f9fa', zIndex: 1000 }}>
-            <button className="close-btn" onClick={toggleSidebar} style={{ position: 'absolute', top: '10px', right: '10px' }}>×</button>
-            <ul className="list-unstyled mt-5">
-                <li><a href="#home" className="d-block py-2 px-3">Home</a></li>
-                <li><a href="#about" className="d-block py-2 px-3">About</a></li>
-                <li><a href="#services" className="d-block py-2 px-3">Services</a></li>
-                <li><a href="#contact" className="d-block py-2 px-3">Contact</a></li>
-            </ul>
-        </div>
-    );
-};
-
-const WithSidebar = ({ children }: { children: React.ReactNode }) => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const toggleSidebar = () => {
-        setIsOpen(!isOpen);
-    };
-
-    return (
-        <div className="d-flex">
-            <button className="menu-btn btn btn-primary" onClick={toggleSidebar} style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 1100 }}>
-                <FaBars />
-            </button>
-            {isOpen && <Sidebar isOpen={isOpen} toggleSidebar={toggleSidebar} />}
-            <div className="content flex-grow-1" style={{ marginLeft: isOpen ? '250px' : '65px', transition: 'margin-left 0.3s' }}>
-                {children}
+function WithSidebar({ children }: { children: React.ReactNode }) {
+    const [showSidebar, setShowSidebar] = useState(false);
+    return <div style={{ display: "flex" }}>
+        <div style={{ width: showSidebar ? "250px" : "50px", transition: "width 0.3s" }}>
+            <div style={{ display: "flex", justifyContent: "flex-end", marginRight: "5px" }}>
+                <Button onClick={() => setShowSidebar(!showSidebar)}>
+                    <FaBars />
+                </Button>
+            </div>
+            <div style={{ opacity: showSidebar ? 1 : 0, transition: "opacity 0.3s" }}>
+                <p>Music Quiz</p>
             </div>
         </div>
-    );
-};
+        <div style={{ flex: 1 }}>
+            {children}
+        </div>
+    </div>
+}
 
 
 export function PlayGame(){
@@ -64,7 +49,6 @@ export function PlayGame(){
                 setAppData(appData);
             }}>Start Game</Button>
         }
-        <div style={{position: "relative"}}>
         <WithSidebar>
         {
             nextActions.map((action, index) => <DisplayAction key={index} action={action} />)
@@ -79,7 +63,6 @@ export function PlayGame(){
         }}>Next</Button>
 
         </WithSidebar>
-        </div>
     </>
 }
 
