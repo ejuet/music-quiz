@@ -36,19 +36,27 @@ function WithSidebar({ children, sidebar, header = <></> }: { children: React.Re
     </div>
 }
 
-function RenderActionTree({ action, indent = 0 }: { action: GameAction, indent?: number }) {
+function RenderActionTree({ action, indent = 0, modifyIndex }: { action: GameAction, indent?: number, modifyIndex: (number)=>void }) {
+    const game = useCurrentGame();
     return <div>
         <div style={{ marginLeft: indent * 20 }}>
             {action.actionType}
             {
+                action instanceof LeafGameAction &&
+                <>
+                    {" "}{game?.getLeafActions().indexOf(action)}
+                    <Button onClick={() => modifyIndex(game?.getLeafActions().indexOf(action))}>Go</Button>
+                </>
+            }
+            {
                 action instanceof CompositeGameAction &&
-                action.actions.map((subAction, index) => <RenderActionTree key={index} action={subAction} indent={indent + 1} />)
+                action.actions.map((subAction, index) => <RenderActionTree key={index} action={subAction} indent={indent + 1} modifyIndex={modifyIndex} />)
             }
         </div>
     </div>
 }
 
-function WithGameSidebar({ children }: { children: React.ReactNode }) {
+function WithGameSidebar({ children, modifyIndex }: { children: React.ReactNode, modifyIndex: (number)=>void }) {
     const currentGame = useCurrentGame();
     const currentQuiz = useCurrentQuiz();
     if(!currentGame || !currentQuiz) {
@@ -56,10 +64,13 @@ function WithGameSidebar({ children }: { children: React.ReactNode }) {
     }
     return <WithSidebar header={<h2>Game</h2>} sidebar={<div>
         <CurrentPoints />
-        <p><b>TODO</b> allow going back to other questions</p>
+        <p><b>TODO</b> make this less confusing</p>
         {
-            <RenderActionTree action={currentGame.getCurrentGame()} />
+            <RenderActionTree action={currentGame.getCurrentGame()} modifyIndex={modifyIndex} />
         }
+        <Button onClick={() => {
+            modifyIndex(-1);
+        }}>Go to current Question</Button>
     </div>}>
         {children}
     </WithSidebar>
@@ -83,6 +94,9 @@ export function PlayGame(){
     const currentGame = useCurrentGame();
     const currentQuiz = useCurrentQuiz();
     const { appData, setAppData } = useAppDataContext();
+
+    const [modifiedIndex, setModifiedIndex] = useState(-1);
+
     if(!currentGame){
         return <h1>Game not found</h1>;
     }
@@ -90,7 +104,7 @@ export function PlayGame(){
         return <h1>Quiz not found</h1>;
     }
 
-    const nextActions = currentGame.getNextActionsToDisplay();
+    const nextActions = currentGame.getNextActionsToDisplay(modifiedIndex);
 
     return <>
         {
@@ -100,7 +114,7 @@ export function PlayGame(){
                 setAppData(appData);
             }}>Start Game</Button>
         }
-        <WithGameSidebar>
+        <WithGameSidebar modifyIndex={(i)=>{setModifiedIndex(i)}}>
         {
             nextActions.map((action, index) => <DisplayAction key={index} action={action} />)
         }
@@ -149,7 +163,7 @@ function useCurrentTeam(){
 function SelectQuestionAction({ action }: { action: SelectQuestion }) {
     const currentQuiz = useCurrentQuiz();
     const currentGame = useCurrentGame();
-    const team = useCurrentTeam();
+    const team = currentGame?.teams.find(t => t.id === action.teamId);
     const { appData, setAppData } = useAppDataContext();
 
     if(!team || !currentQuiz) {

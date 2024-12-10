@@ -50,13 +50,18 @@ export class SaveGame {
         return leafActions.slice(firstUnfinishedIndex);
     }
 
-    getNextActionsToDisplay(){
+
+    getNextActionsToDisplay(startIndex: number = -1) {
+        const nextActions = startIndex === -1 ? this.getRemainingActions() : this.getLeafActions().slice(startIndex);
+        return SaveGame.untilNewPage(nextActions);
+    }
+
+    static untilNewPage(nextActions: LeafGameAction[]) {
         /*
             get the next actions to display on one page:
             - SelectQuestion gets an individual page,
             - Question Parts are displayed on one page until PageBreak
         */
-        const nextActions = this.getRemainingActions();
         const ret: LeafGameAction[] = [];
         
         for(let i = 0; i < nextActions.length; i++){
