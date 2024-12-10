@@ -115,17 +115,22 @@ export function PlayGame(){
             }}>Start Game</Button>
         }
         <WithGameSidebar modifyIndex={(i)=>{setModifiedIndex(i)}}>
-        {
-            nextActions.map((action, index) => <DisplayAction key={index} action={action} />)
-        }
-        <Button onClick={() => {
-            nextActions.forEach(a => {
-                if(a.finished === false){
-                    a.setFinished(true)
-                }
-            });
-            setAppData(appData);
-        }}>Next</Button>
+            <div style={{ display: "flex", height: "89vh" }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, justifyContent: "center" }}>
+                    {
+                        nextActions.map((action, index) => <DisplayAction key={index} action={action} />)
+                    }
+                    <Button onClick={() => {
+                        nextActions.forEach(a => {
+                            if(a.finished === false) {
+                                a.setFinished(true)
+                            }
+                        });
+                        setAppData(appData);
+                    }} className="mt-3">Next</Button>
+                </div>
+            </div>
+
 
         </WithGameSidebar>
     </>
