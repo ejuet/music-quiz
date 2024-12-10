@@ -1,7 +1,7 @@
 import React from "react";
 import { DisplayableText, PlayableSong, Question, QuestionPartP, RightOrWrong, ShowAnswerButton, SimpleQuestion, SimpleQuestionContent } from "../Logic/structure.ts";
 import { RenderDisplayableText } from "../Common/DisplayableText.tsx";
-import { Button, ButtonGroup } from "react-bootstrap";
+import { Button, ButtonGroup, ToggleButton } from "react-bootstrap";
 import { PlayAudio } from "../Database/DatabaseComponents.tsx";
 import { ShowQuestionPart } from "../Logic/gameStructure.ts";
 import { useAppDataContext } from "../Logic/AppDataContext.tsx";
@@ -23,7 +23,7 @@ export function RenderShowQuestionPart({ action }: { action: ShowQuestionPart })
         }
         {
             part.partType === 'RightOrWrong' &&
-            <RenderRightOrWrong questionPart={part as RightOrWrong} modifyPoints={() => { }} />
+            <RenderRightOrWrong questionPart={part as RightOrWrong} action={action} />
         }
         {
             part.partType === 'ShowAnswerButton' &&
@@ -36,14 +36,29 @@ function RenderRightOrWrong({ questionPart, action }: { questionPart: RightOrWro
     const { appData, setAppData } = useAppDataContext();
     return <>
         <ButtonGroup>
-            <Button variant="success" onClick={() => {
-                action.indPoints = questionPart.pointsIfRight;
-                setAppData(appData);
-            }}>Right Answer (+{questionPart.pointsIfRight})</Button>
-            <Button variant="danger" onClick={() => {
-                action.indPoints = questionPart.pointsIfWrong;
-                setAppData(appData);
-            }}>Wrong Answer (-{questionPart.pointsIfWrong})</Button>
+            <ToggleButton
+                type="radio"
+                variant="outline-success"
+                checked={action.indPoints === questionPart.pointsIfRight}
+                id={"0"} value={"0"}
+                onChange={(e) => {
+                    action.indPoints = questionPart.pointsIfRight;
+                    setAppData(appData);
+                }}
+            >
+                Right Answer ({questionPart.pointsIfRight !== 0 ? (questionPart.pointsIfRight > 0 ? `+${questionPart.pointsIfRight}` : `${questionPart.pointsIfRight}`) : ''} {" "} points)
+            </ToggleButton>
+            <ToggleButton
+                type="radio"
+                variant="outline-danger"
+                checked={action.indPoints === questionPart.pointsIfWrong} id={"1"} value={"1"}
+                onChange={(e) => {
+                    action.indPoints = questionPart.pointsIfWrong;
+                    setAppData(appData);
+                }}
+            >
+                Wrong Answer ({questionPart.pointsIfWrong !== 0 ? (questionPart.pointsIfWrong > 0 ? `+${questionPart.pointsIfWrong}` : `${questionPart.pointsIfWrong}`) : 'no'} {" "} points)
+            </ToggleButton>
         </ButtonGroup>
     </>
 }
