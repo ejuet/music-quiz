@@ -1,5 +1,5 @@
 import React from 'react';
-import { Category, MultiQuestion, Question, questionTypes, SimpleQuestion } from '../Logic/structure.ts';
+import { Category, MultiQuestion, MusicQuiz, Question, questionTypes, SimpleQuestion } from '../Logic/structure.ts';
 import { useAppDataContext, useCurrentQuiz } from '../Logic/AppDataContext.tsx';
 import { Button, Table } from 'react-bootstrap';
 import { EditNumber, EditQuestion, EditText } from './QuestionEditor/EditQuestion.tsx';
@@ -9,16 +9,16 @@ import { isRight } from 'fp-ts/lib/Either';
 import { Dropdown } from 'react-bootstrap';
 import DeleteButton from '../Common/DeleteButton.tsx';
 
+interface QuizGridProps {
+    quiz: MusicQuiz
+    renderQuestions: (question: Question[], category: Category, points: number) => JSX.Element
+    renderCategory: (category: Category) => JSX.Element
+    renderPoints: (points: number) => JSX.Element
+    renderAdditionalColumns: (category: Category) => JSX.Element
+    renderAdditionalRows: () => JSX.Element
+}
 
-export function Grid(){
-    const currentQuiz = useCurrentQuiz();
-    const {setAppData, appData} = useAppDataContext();
-
-    // Get all unique points to display them in the table as columns
-    //const allPoints = currentQuiz? Array.from(new Set(currentQuiz!.items.map((item)=> QuestionWrapperFactory.create(item).getPoints()))).sort((a,b)=>a-b): []
-
-    const allPoints = currentQuiz?.items.map((item) => item.getPoints()).filter((value, index, self) => self.indexOf(value) === index).sort((a,b)=>a-b) || [];
-
+export function QuizGrid(props: QuizGridProps) {
     return (
         <div>
             <Table>
@@ -26,53 +26,86 @@ export function Grid(){
                     <tr>
                         <th>Category</th>
                         {
-                            allPoints.map((points) => <th key={points} >{<EditPoints points={points} />} Punkte</th>)
+                            props.quiz.items.map((item) => item.getPoints()).filter((value, index, self) => self.indexOf(value) === index).sort((a, b) => a - b).map((points) => <th key={points} >{props.renderPoints(points)}</th>)
                         }
                     </tr>
                 </thead>
                 <tbody>
                     {
-                        currentQuiz?.categories.map((category) => {
-                            const questions = currentQuiz.items.filter((item) => item.category === category.id) as Question[];
+                        props.quiz.categories.map((category) => {
+                            const questions = props.quiz.items.filter((item) => item.category === category.id) as Question[];
                             return <tr key={category.id}>
                                 <td>
-                                    <EditText text={category.name} onChange={(value) => category.name = value}/>
-                                    <br />
-                                    <DeleteButton onDelete={() => {
-                                        currentQuiz.categories = currentQuiz.categories.filter((cat) => cat !== category);
-                                        currentQuiz.items = currentQuiz.items.filter((item) => item.category !== category.id);
-                                        setAppData(appData);
-                                    }} customMessage={'Are you sure you want to delete the category "'+category.name+'"?'} />
+                                    {props.renderCategory(category)}
                                 </td>
                                 {
-                                    allPoints.map((points) => {
+                                    props.quiz.items.map((item) => item.getPoints()).filter((value, index, self) => self.indexOf(value) === index).sort((a, b) => a - b).map((points) => {
                                         const questionsInColumn = questions.filter((question) => question.getPoints() === points);
-                                        return <td key={category.id+"-"+points} style={{maxWidth: (1/allPoints.length)*60+"vw"}}>
-                                            {
-                                                questionsInColumn.map((question, ind) => <EditQuestion key={category.id+"-"+points+"-"+ind} question={question}/>)
-                                            }
-                                            {
-                                                questionsInColumn.length === 0 &&
-                                                <AddQuestionOfTypeButton category={category} points={points}/>
-                                            }
+                                        return <td key={category.id + "-" + points} style={{ maxWidth: (1 / props.quiz.items.length) * 60 + "vw" }}>
+                                            {props.renderQuestions(questionsInColumn, category, points)}
                                         </td>
                                     })
                                 }
-                                <td>
-                                    <AddQuestionOfTypeButton category={category}/>
-                                </td>
+                                {props.renderAdditionalColumns(category)}
                             </tr>
                         })
                     }
-                    <tr>
-                        <td>
-                            <AddCategoryButton/>
-                        </td>
-                    </tr>
+                    {props.renderAdditionalRows()}
                 </tbody>
             </Table>
         </div>
     )
+}
+
+export function Grid(){
+    const currentQuiz = useCurrentQuiz()
+    const {setAppData, appData} = useAppDataContext()
+    if(!currentQuiz){
+        return <h1>Quiz not found</h1>
+    }
+    return <QuizGrid
+        quiz={currentQuiz}
+        renderQuestions={(questions, category, points) => {
+            return <>
+                {
+                    questions.map((question, ind) => <EditQuestion key={ind} question={question} />)
+                }
+                {
+                    questions.length === 0 &&
+                    <AddQuestionOfTypeButton category={category} points={points} />
+                }
+            </>
+        }} 
+        renderCategory={(category) => {
+            return <>
+                <EditText text={category.name} onChange={(value) => category.name = value} />
+                <br />
+                <DeleteButton onDelete={() => {
+                    currentQuiz.categories = currentQuiz.categories.filter((cat) => cat !== category);
+                    currentQuiz.items = currentQuiz.items.filter((item) => item.category !== category.id);
+                    setAppData(appData);
+                }} customMessage={'Are you sure you want to delete the category "'+category.name+'"?'} />
+            </>
+        }}
+        renderPoints={(points) => {
+            return <EditPoints points={points} />
+        }
+        }
+        renderAdditionalColumns={(category) => {
+            return <td>
+                <AddQuestionOfTypeButton category={category} />
+            </td>
+        }}
+        renderAdditionalRows={() => {
+            return <>
+                <tr>
+                    <td>
+                        <AddCategoryButton />
+                    </td>
+                </tr>
+            </>
+        }}
+    />
 }
 
 function EditPoints({points}: {points: number}){
