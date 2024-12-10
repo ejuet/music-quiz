@@ -1,7 +1,7 @@
 import { Button } from "react-bootstrap";
 import React from "react";
 import { useAppDataContext, useCurrentGame, useCurrentQuiz } from "../Logic/AppDataContext.tsx";
-import { CompositeGameAction, FinishGame, GameAction, LeafGameAction, SelectQuestion, ShowQuestionPart, TeamAction } from "../Logic/gameStructure.ts";
+import { CompositeGameAction, GameAction, LeafGameAction, SelectQuestion, ShowQuestionPart, TeamAction } from "../Logic/gameStructure.ts";
 import { RenderShowQuestionPart } from "./RenderQuestion.tsx";
 import { QuizGrid } from "../QuizEditor/Grid.tsx";
 import { useState } from "react";
@@ -129,7 +129,7 @@ export function PlayGame(){
                         nextActions.map((action, index) => <DisplayAction key={index} action={action} />)
                     }
                     {
-                        currentGame.getRemainingActions().length !== 0 &&
+                        nextActions.length !== 0 &&
                         <Button onClick={() => {
                             nextActions.forEach(a => {
                                 if(a.finished === false) {
@@ -139,11 +139,35 @@ export function PlayGame(){
                             setAppData(appData);
                         }} className="mt-3">Next</Button>
                     }
+                    {
+                        nextActions.length === 0 && currentGame.gameActions.length !== 0 &&
+                        <EndScreen />
+                    }
                 </div>
             </div>
 
 
         </WithGameSidebar>
+    </>
+}
+
+function EndScreen() {
+    const currentGame = useCurrentGame();
+    if(!currentGame) {
+        return <></>;
+    }
+    const teams = currentGame.teams.sort((a, b) => currentGame.getCurrentPoints(b.id) - currentGame.getCurrentPoints(a.id));
+    return <>
+        <h1>Game Finished</h1>
+        <h2>Final Scores</h2>
+        {
+            teams.map((team, i) => {
+                const playerNames = currentGame.getTeam(team.id)!.players.map(p => p.name).join(", ");
+                return <p key={team.id}>
+                    {i + 1}. Place: Team <b>{team.name}</b> {playerNames ? `(${playerNames})` : ``} with {currentGame.getCurrentPoints(team.id)} points
+                </p>
+            })
+        }
     </>
 }
 
@@ -156,10 +180,6 @@ function DisplayAction({ action }: { action:GameAction }) {
         {
             action.actionType === "ShowQuestionPart" &&
             <RenderShowQuestionPart action={action as ShowQuestionPart} />
-        }
-        {
-            action.actionType === "FinishGame" &&
-            <FinishGameAction action={action as FinishGame} />
         }
     </div>
 }
@@ -225,17 +245,6 @@ function ShowCurrentScore(){
         <p>Team <b>{team.name}</b> currently has {currentGame.getCurrentPoints(team.id)} points!</p>
     </div>
 }
-
-function FinishGameAction({ action }: { action: FinishGame }) {
-    const currentGame = useCurrentGame();
-    return <div>
-        <h1>Game Finished</h1>
-        {
-            action.teamStats.map(s => <p>Team {currentGame?.getTeam(s.teamId)?.name} has {s.points} points!</p>)
-        }
-    </div>
-}
-
 
 export function GameHistory(){
     const currentGame = useCurrentGame();

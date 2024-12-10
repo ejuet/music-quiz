@@ -5,7 +5,7 @@ import { AppData, MultiQuestion, MusicQuiz, PageBreak, PlayableSong, Question, Q
 import React from "react";
 import { useParams } from "react-router-dom";
 import { category } from "fp-ts";
-import { GameAction, SaveGame, SelectAndAnswerQuestion, SelectQuestion, PlayGame as PlayGameDS, FinishGame, ShowQuestionParts, ShowQuestionPart } from "./gameStructure.ts";
+import { GameAction, SaveGame, SelectAndAnswerQuestion, SelectQuestion, PlayGame as PlayGameDS, ShowQuestionParts, ShowQuestionPart } from "./gameStructure.ts";
 import { PlayGame as PlayG } from "../Play/PlayGame.tsx";
 
 
@@ -82,9 +82,6 @@ function loadAppData(): AppData {
                         showQuestionParts.allQuestions.forEach((question) => {
                             setPrototypeOfQuestion(question);
                         })
-                    }
-                    else if (subAction.actionType === "FinishGame"){
-                        Object.setPrototypeOf(subAction, FinishGame.prototype);
                     }
                 });
             }

@@ -215,14 +215,7 @@ export class PlayGame extends CompositeGameAction {
                 a.selectQuestion.availableQuestions = this.questionIds.filter(q => !takenQuestionIds.includes(q));
             }
         })
-
-        //calculate the score for each team
-        const finishGame = new FinishGame();
-        finishGame.teamStats = this.teamIds.map(teamId => {
-            const points = this.getCurrentPoints(teamId);
-            return {teamId, points};
-        });
-        return [...this._actions, finishGame];
+        return [...this._actions];
     }
 }
 
@@ -321,14 +314,6 @@ export class ShowQuestionPart extends LeafGameAction {
     indPoints: number = 0;
 }
 
-export class FinishGame extends LeafGameAction {
-    actionType = "FinishGame";
-    finished: boolean = false;
-    teamStats: TeamStats[] = [];
-    setFinished(finished: boolean) {
-        //do nothing
-    }
-}
 
 class TeamStats{
     teamId: string;
