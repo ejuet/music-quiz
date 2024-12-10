@@ -136,12 +136,11 @@ export class SimpleQuestionContent extends QuestionContent {
     }
 
     getParts(): QuestionPart[] {
-        const showAnswerButton = new ShowAnswerButton();
-        showAnswerButton.answer = this.answer;
-        showAnswerButton.RightOrWrong = new RightOrWrong();
-        showAnswerButton.RightOrWrong.pointsIfRight = this.pointsIfRight;
-        showAnswerButton.RightOrWrong.pointsIfWrong = 0;
-        return [this.question, this.song, showAnswerButton, new PageBreak()];
+        const rightOrWrong = new RightOrWrong();
+        rightOrWrong.pointsIfRight = this.pointsIfRight;
+        rightOrWrong.pointsIfWrong = 0;
+
+        return [this.question, this.song, new PageBreak(), this.answer, rightOrWrong, new PageBreak()];
     }
 
     setPoints(points: number) {
