@@ -139,7 +139,6 @@ export function GameHistory(){
         <h2>Leaf Actions</h2>
         <Button onClick={() => {
             (currentGame.getLeafActions()[0] as SelectQuestion).questionId = "784908";
-            (currentGame.getLeafActions()[1] as AnswerQuestion).finished = true;
             setAppData(appData);
         }}>Example Select First</Button>
         <p style={{ whiteSpace: "pre-wrap" }}>
