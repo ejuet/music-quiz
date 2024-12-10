@@ -1,7 +1,7 @@
 import React from "react";
 import { DisplayableText, PlayableSong, Question, QuestionPartP, RightOrWrong, ShowAnswerButton, SimpleQuestion, SimpleQuestionContent, SimpleText } from "../Logic/structure.ts";
 import { RenderDisplayableText } from "../Common/DisplayableText.tsx";
-import { Button, ButtonGroup, ToggleButton } from "react-bootstrap";
+import { Button, ButtonGroup, Form, ToggleButton } from "react-bootstrap";
 import { PlayAudio } from "../Database/DatabaseComponents.tsx";
 import { ShowQuestionPart } from "../Logic/gameStructure.ts";
 import { useAppDataContext } from "../Logic/AppDataContext.tsx";
@@ -29,6 +29,24 @@ export function RenderShowQuestionPart({ action }: { action: ShowQuestionPart })
             part.partType === 'ShowAnswerButton' &&
             <RenderShowAnswerButton questionPart={part as ShowAnswerButton} action={action} />
         }
+        {
+            part.partType === 'EnterCustomPoints' &&
+            <RenderEnterCustomPoints action={action} />
+        }
+    </>
+}
+
+function RenderEnterCustomPoints({ action }: { action: ShowQuestionPart }) {
+    const { appData, setAppData } = useAppDataContext();
+    return <>
+        <Form.Control
+            type="number"
+            value={action.indPoints}
+            onChange={(e) => {
+                action.indPoints = parseInt(e.target.value);
+                setAppData(appData);
+            }}
+        />
     </>
 }
 

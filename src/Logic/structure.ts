@@ -89,9 +89,13 @@ export class PageBreak extends QuestionPartP {
     partType: string = "PageBreak";
 }
 
+export class EnterCustomPoints extends QuestionPartP {
+    partType: string = "EnterCustomPoints";
+}
+
 export type DisplayableText = SimpleText | string;
 
-export type QuestionPart = SimpleText | PlayableSong | RightOrWrong | DisplayableText | ShowAnswerButton | PageBreak;
+export type QuestionPart = SimpleText | PlayableSong | RightOrWrong | DisplayableText | ShowAnswerButton | PageBreak | EnterCustomPoints;
 
 // ---------- Define the "Question" type ----------
 
@@ -207,7 +211,7 @@ export class ChangePointsManually extends BasicQuestion {
     }
 
     getParts(): QuestionPart[] {
-        return [this.text, new PageBreak()];
+        return [this.text, new EnterCustomPoints(), new PageBreak()];
     }
     getPoints(): number {
         return this.points;
