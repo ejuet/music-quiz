@@ -22,7 +22,7 @@ export class SaveGame {
     }
 
     getCurrentGame() {
-        return this.gameActions.find(a => a instanceof PlayGame) as PlayGame;
+        return this.gameActions.find(a => a instanceof PlayGame) ;
     }
 
     getCurrentPoints(teamId: string) {

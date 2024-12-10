@@ -62,11 +62,16 @@ function WithGameSidebar({ children, modifyIndex }: { children: React.ReactNode,
     if(!currentGame || !currentQuiz) {
         return <h1>Game or Quiz not found</h1>;
     }
+    const game = currentGame.getCurrentGame();
     return <WithSidebar header={<h2>Game</h2>} sidebar={<div>
-        <CurrentPoints />
+        {
+            game &&
+            <CurrentPoints />
+        }
         <p><b>TODO</b> make this less confusing</p>
         {
-            <RenderActionTree action={currentGame.getCurrentGame()} modifyIndex={modifyIndex} />
+            game &&
+            <RenderActionTree action={game} modifyIndex={modifyIndex} />
         }
         <Button onClick={() => {
             modifyIndex(-1);
@@ -107,27 +112,33 @@ export function PlayGame(){
     const nextActions = currentGame.getNextActionsToDisplay(modifiedIndex);
 
     return <>
-        {
-            currentGame.gameActions.length === 0  &&
-            <Button onClick={() => {
-                currentGame.startGame(currentQuiz);
-                setAppData(appData);
-            }}>Start Game</Button>
-        }
         <WithGameSidebar modifyIndex={(i)=>{setModifiedIndex(i)}}>
             <div style={{ display: "flex", height: "89vh" }}>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, justifyContent: "center" }}>
+                <div style={{
+                    display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, justifyContent: "center",
+                    textAlign: "center"
+                }}>
+                    {
+                        currentGame.gameActions.length === 0  &&
+                        <Button onClick={() => {
+                            currentGame.startGame(currentQuiz);
+                            setAppData(appData);
+                        }}>Start Game</Button>
+                    }
                     {
                         nextActions.map((action, index) => <DisplayAction key={index} action={action} />)
                     }
-                    <Button onClick={() => {
-                        nextActions.forEach(a => {
-                            if(a.finished === false) {
-                                a.setFinished(true)
-                            }
-                        });
-                        setAppData(appData);
-                    }} className="mt-3">Next</Button>
+                    {
+                        currentGame.getRemainingActions().length !== 0 &&
+                        <Button onClick={() => {
+                            nextActions.forEach(a => {
+                                if(a.finished === false) {
+                                    a.setFinished(true)
+                                }
+                            });
+                            setAppData(appData);
+                        }} className="mt-3">Next</Button>
+                    }
                 </div>
             </div>
 
