@@ -2,7 +2,7 @@ import { Button } from "react-bootstrap";
 import React from "react";
 import { useAppDataContext, useCurrentGame, useCurrentQuiz } from "../Logic/AppDataContext.tsx";
 import { AnswerQuestion, FinishGame, GameAction, SelectQuestion, ShowQuestionPart, TeamAction } from "../Logic/gameStructure.ts";
-import { RenderQuestion, RenderShowQuestionPart } from "./RenderQuestion.tsx";
+import { RenderShowQuestionPart } from "./RenderQuestion.tsx";
 
 export function PlayGame(){
     const currentGame = useCurrentGame();
@@ -15,7 +15,7 @@ export function PlayGame(){
         return <h1>Quiz not found</h1>;
     }
 
-    const nextActions = currentGame.getRemainingActions();
+    const nextActions = currentGame.getNextActionsToDisplay();
 
     return <>
         {
@@ -29,6 +29,14 @@ export function PlayGame(){
         {
             nextActions.map((action, index) => <DisplayAction key={index} action={action} />)
         }
+        <Button onClick={() => {
+            nextActions.forEach(a => {
+                if(a.finished === false){
+                    a.setFinished(true)
+                }
+            });
+            setAppData(appData);
+        }}>Next</Button>
     </>
 }
 
@@ -37,10 +45,6 @@ function DisplayAction({ action }: { action:GameAction }) {
         {
             action.actionType === "SelectQuestion" &&
             <SelectQuestionAction action={action as SelectQuestion} />
-        }
-        {
-            action.actionType === "AnswerQuestion" &&
-            <AnswerQuestionAction action={action as AnswerQuestion} />
         }
         {
             action.actionType === "ShowQuestionPart" &&
@@ -88,33 +92,7 @@ function SelectQuestionAction({ action }: { action: SelectQuestion }) {
     </div>
 }  
 
-function AnswerQuestionAction({ action }: { action: AnswerQuestion }) {
-    const team = useCurrentTeam();
-    const { appData, setAppData } = useAppDataContext();
-    const currentQuiz = useCurrentQuiz();
-    if(!currentQuiz){
-        return <></>;
-    }
-    const currentQuestion = currentQuiz.items.find(q => q.questionId === action.questionId);
-    return <div>
-        <h1>Answer Question</h1>
-        <p>Team <b>{team?.name}</b> has to answer the question!</p>
-        <ShowCurrentScore />
-        {
-            currentQuestion ?
-            <RenderQuestion question={currentQuestion} modifyPoints={(points)=>{
-                action.points = points;
-                setAppData(appData);
-            }} />
-            :
-            <p>Question "{action.questionId}" not found</p>
-        }
-        <Button onClick={() => {
-            action.finished = true;
-            setAppData(appData);
-        }}>Finish</Button>
-    </div>
-}
+
 
 function ShowCurrentScore(){
     const team = useCurrentTeam();

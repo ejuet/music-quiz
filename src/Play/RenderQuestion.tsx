@@ -8,7 +8,6 @@ import { useAppDataContext } from "../Logic/AppDataContext.tsx";
 
 export function RenderShowQuestionPart({ action }: { action: ShowQuestionPart }) {
     const part = action.part;
-    const { appData, setAppData } = useAppDataContext();
     return <>
         {
             typeof part === 'string' &&
@@ -28,45 +27,9 @@ export function RenderShowQuestionPart({ action }: { action: ShowQuestionPart })
         }
         {
             part.partType === 'ShowAnswerButton' &&
-            <RenderShowAnswerButton questionPart={part as ShowAnswerButton} modifyPoints={(p) => {
-                action.indPoints = p
-                setAppData(appData);
-            }} />
+            <RenderShowAnswerButton questionPart={part as ShowAnswerButton} action={action} />
         }
     </>
-}
-
-export function RenderQuestion({ question, modifyPoints }: { question: Question, modifyPoints: (points: number) => void }) {
-    return <div>
-        <small>Type: {question.questionType}</small>
-        {
-            question.getParts().map((part, index) => {
-                const questionPart = part as QuestionPartP;
-                return <div key={index}>
-                    {
-                        typeof part === 'string' &&
-                        <p>{part}</p>
-                    }
-                    {
-                        questionPart.partType === 'DisplayableText' &&
-                        <RenderDisplayableText text={questionPart as DisplayableText} />
-                    }
-                    {
-                        questionPart.partType === 'PlayableSong' &&
-                        <PlayAudio filename={(questionPart as PlayableSong).filename} />
-                    }
-                    {
-                        questionPart.partType === 'RightOrWrong' &&
-                        <RenderRightOrWrong questionPart={questionPart as RightOrWrong} modifyPoints={modifyPoints} />
-                    }
-                    {
-                        questionPart.partType === 'ShowAnswerButton' &&
-                        <RenderShowAnswerButton questionPart={questionPart as ShowAnswerButton} modifyPoints={modifyPoints} />
-                    }
-                    </div>
-            })
-        }
-    </div>
 }
 
 function RenderRightOrWrong({ questionPart, modifyPoints }: { questionPart: RightOrWrong, modifyPoints: (points: number) => void }) {
@@ -82,14 +45,18 @@ function RenderRightOrWrong({ questionPart, modifyPoints }: { questionPart: Righ
     </>
 }
 
-function RenderShowAnswerButton({ questionPart, modifyPoints }: { questionPart: ShowAnswerButton, modifyPoints: (points: number) => void }) {
+function RenderShowAnswerButton({ questionPart, action }: { questionPart: ShowAnswerButton, action: ShowQuestionPart }) {
     const [showAnswer, setShowAnswer] = React.useState(false);
+    const { appData, setAppData } = useAppDataContext();
     return <>
         {
             showAnswer ?
             <>
                 <RenderDisplayableText text={questionPart.answer} />
-                <RenderRightOrWrong questionPart={questionPart.RightOrWrong} modifyPoints={modifyPoints} />
+                <RenderRightOrWrong questionPart={questionPart.RightOrWrong} modifyPoints={(p)=>{
+                    action.indPoints = p;
+                    setAppData(appData);
+                }} />
             </>
             :
             <Button onClick={() => setShowAnswer(true)}>Show Answer</Button>

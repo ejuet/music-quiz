@@ -1,4 +1,4 @@
-import { MusicQuiz, Question, QuestionPartP } from "./structure";
+import { MusicQuiz, PageBreak, Question, QuestionPartP } from "./structure.ts";
 
 export class SaveGame {
     saveId: string;
@@ -44,6 +44,32 @@ export class SaveGame {
             return [];
         }
         return leafActions.slice(firstUnfinishedIndex);
+    }
+
+    getNextActionsToDisplay(){
+        /*
+            get the next actions to display on one page:
+            - SelectQuestion gets an individual page,
+            - Question Parts are displayed on one page until PageBreak
+        */
+        const nextActions = this.getRemainingActions();
+        const ret: LeafGameAction[] = [];
+        
+        for(let i = 0; i < nextActions.length; i++){
+            const action = nextActions[i];
+            if(action instanceof SelectQuestion){
+                ret.push(action);
+                break;
+            }
+            if(action instanceof ShowQuestionPart){
+                if(action.part instanceof PageBreak){
+                    ret.push(action);
+                    break;
+                }
+            }
+            ret.push(action);
+        }
+        return ret;
     }
 
     getTeam(teamId: string) {
@@ -108,10 +134,11 @@ export class AnswerQuestion extends QuestionAction {
 export abstract class GameAction {
     abstract get finished(): boolean;
     abstract actionType: string;
-    abstract getLeafActions(): GameAction[];
+    abstract getLeafActions(): LeafGameAction[];
 }
 
 abstract class LeafGameAction extends GameAction {
+    abstract setFinished(finished: boolean);
     getLeafActions() {
         return [this];
     }
@@ -132,6 +159,9 @@ export class ChangePoints extends LeafGameAction {
     teamId: string;
     points: number;
     finished: boolean = true; //this action is always finished because it is only used for calculating the score
+    setFinished(finished: boolean) {
+        //do nothing
+    }
     constructor() {
         super();
     }
@@ -229,6 +259,9 @@ export class SelectQuestion extends TeamAction {
     get finished() {
         return this.questionId !== "";
     }
+    setFinished(finished: boolean) {
+        //do nothing
+    }
 }
 
 export class AnswerQuestion extends TeamAction {
@@ -236,6 +269,9 @@ export class AnswerQuestion extends TeamAction {
     actionType = "AnswerQuestion";
     questionId: string = "";
     points: number = 0;
+    setFinished(finished: boolean) {
+        this.finished = finished;
+    }
 }
 
 export class ShowQuestionParts extends CompositeGameAction {
@@ -283,6 +319,9 @@ export class ShowQuestionPart extends LeafGameAction {
     get finished(): boolean {
         return this._finished;
     }
+    setFinished(finished: boolean) {
+        this._finished = finished;
+    }
     indPoints: number = 0;
 }
 
@@ -290,6 +329,9 @@ export class FinishGame extends LeafGameAction {
     actionType = "FinishGame";
     finished: boolean = false;
     teamStats: TeamStats[] = [];
+    setFinished(finished: boolean) {
+        //do nothing
+    }
 }
 
 class TeamStats{

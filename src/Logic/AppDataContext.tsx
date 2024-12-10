@@ -9,6 +9,24 @@ import { AnswerQuestion, GameAction, SaveGame, SelectAndAnswerQuestion, SelectQu
 import { PlayGame as PlayG } from "../Play/PlayGame.tsx";
 
 
+function setPrototypeOfQuestionPartP(part: QuestionPartP){
+    if(part.partType === "SimpleText"){
+        Object.setPrototypeOf(part, SimpleText.prototype);
+    }
+    else if(part.partType === "RightOrWrong"){
+        Object.setPrototypeOf(part, RightOrWrong.prototype);
+    }
+    else if(part.partType === "PlayableSong"){
+        Object.setPrototypeOf(part, PlayableSong.prototype);
+    }
+    else if(part.partType === "PageBreak"){
+        Object.setPrototypeOf(part, PageBreak.prototype);
+    }
+    else if(typeof part === "string"){
+        Object.setPrototypeOf(part, String.prototype);
+    }
+}
+
 function setPrototypeOfQuestion(question: Question){
     if(question.questionType === "SimpleQuestion"){
         Object.setPrototypeOf(question, SimpleQuestion.prototype);
@@ -23,115 +41,12 @@ function setPrototypeOfQuestion(question: Question){
         });
     }
     question.getParts().forEach((part) => {
-        const p = part as QuestionPartP
-        if(p.partType === "SimpleText"){
-            Object.setPrototypeOf(p, SimpleText.prototype);
-        }
-        else if(p.partType === "RightOrWrong"){
-            Object.setPrototypeOf(p, RightOrWrong.prototype);
-        }
-        else if(p.partType === "PlayableSong"){
-            Object.setPrototypeOf(p, PlayableSong.prototype);
-        }
-        else if(typeof part === "string"){
-            Object.setPrototypeOf(p, String.prototype);
-        }
-        else if(p.partType === "PageBreak"){
-            Object.setPrototypeOf(p, PageBreak.prototype);
-        }
+        setPrototypeOfQuestionPartP(part as QuestionPartP)
     })
 }
 
 function loadAppData(): AppData {
     const ret = localStorage.getItem("musicQuizAppData") ? JSON.parse(localStorage.getItem("musicQuizAppData")!) as AppData : new AppData();
-    /*
-    ret.musicQuizzes = [{
-        id: "1",
-        name: "Neues Quiz",
-        categories: [
-            {
-                id: "1",
-                name: "Geography"
-            },
-            {
-                id: "2",
-                name: "History"
-            },
-            {
-                id: "3",
-                name: "Science"
-            }
-        ],
-        items: [
-            {
-                category: "1",
-                question: "What is the capital of France?",
-                song: {
-                    filename: 'Snowy Peaks pt II - Chris Haugen.mp3'
-                },
-                pointsIfRight: 10,
-                answer: {
-                    text: 'Paris'
-                }
-            },
-            {
-                category: "1",
-                question: "What is the capital of Germany?",
-                song: {
-                    filename: 'Snowy Peaks pt II - Chris Haugen.mp3'
-                },
-                pointsIfRight: 20,
-                answer: {
-                    text: 'Berlin'
-                }
-            },
-            {
-                category: "2",
-                question: "Who was the first President of the United States?",
-                song: {
-                    filename: 'Snowy Peaks pt II - Chris Haugen.mp3'
-                },
-                pointsIfRight: 10,
-                answer: {
-                    text: 'George Washington'
-                }
-            },
-            {
-                category: "2",
-                question: "In which year did World War II end?",
-                song: {
-                    filename: 'Snowy Peaks pt II - Chris Haugen.mp3'
-                },
-                pointsIfRight: 25,
-                answer: {
-                    text: '1945'
-                }
-            },
-            {
-                category: "3",
-                question: "What is the chemical symbol for water?",
-                song: {
-                    filename: 'Snowy Peaks pt II - Chris Haugen.mp3'
-                },
-                pointsIfRight: 10,
-                answer: {
-                    text: 'H2O'
-                }
-            },
-            {
-                category: "3",
-                question: "What planet is known as the Red Planet?",
-                song: {
-                    filename: 'Snowy Peaks pt II - Chris Haugen.mp3'
-                },
-                pointsIfRight: 20,
-                answer: {
-                    text: 'Mars'
-                }
-            }
-        ],
-    }]
-    */
 
     Object.setPrototypeOf(ret, AppData.prototype);
 
@@ -141,33 +56,7 @@ function loadAppData(): AppData {
         quiz.lastModified = new Date(quiz.lastModified);
 
         quiz.items.forEach((item) => {
-            if(item.questionType === "SimpleQuestion"){
-                Object.setPrototypeOf(item, SimpleQuestion.prototype);
-                const parsedItem = item as SimpleQuestion;
-                Object.setPrototypeOf(parsedItem.content, SimpleQuestionContent.prototype);
-            }
-            else if (item.questionType === "MultiQuestion"){
-                Object.setPrototypeOf(item, MultiQuestion.prototype);
-                const parsedItem = item as MultiQuestion;
-                parsedItem.content.forEach((content) => {
-                    Object.setPrototypeOf(content, SimpleQuestionContent.prototype);
-                });
-            }
-            item.getParts().forEach((part) => {
-                const p = part as QuestionPartP
-                if(p.partType === "SimpleText"){
-                    Object.setPrototypeOf(p, SimpleText.prototype);
-                }
-                else if(p.partType === "RightOrWrong"){
-                    Object.setPrototypeOf(p, RightOrWrong.prototype);
-                }
-                else if(p.partType === "PlayableSong"){
-                    Object.setPrototypeOf(p, PlayableSong.prototype);
-                }
-                else if(typeof part === "string"){
-                    Object.setPrototypeOf(p, String.prototype);
-                }
-            })
+            setPrototypeOfQuestion(item);
         });
     });
 
@@ -189,6 +78,7 @@ function loadAppData(): AppData {
                         Object.setPrototypeOf(showQuestionParts, ShowQuestionParts.prototype);
                         showQuestionParts.questionParts.forEach((part) => {
                             Object.setPrototypeOf(part, ShowQuestionPart.prototype);
+                            setPrototypeOfQuestionPartP(part.part as QuestionPartP);
                         });
                         showQuestionParts.allQuestions.forEach((question) => {
                             setPrototypeOfQuestion(question);
