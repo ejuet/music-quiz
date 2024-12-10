@@ -8,16 +8,23 @@ import { useState } from "react";
 import { FaBars } from "react-icons/fa";
 
 
-function WithSidebar({ children, sidebar }: { children: React.ReactNode, sidebar: React.ReactNode }) {
+function WithSidebar({ children, sidebar,  }: { children: React.ReactNode, sidebar: React.ReactNode }) {
     const [showSidebar, setShowSidebar] = useState(false);
+    const sidebarWidth = 250;
+    const menuButtonSpace = 50;
+    const currentSidebarWidth = showSidebar ? sidebarWidth : menuButtonSpace;
     return <div style={{ display: "flex" }}>
-        <div style={{ width: showSidebar ? "250px" : "50px", transition: "width 0.3s", position: "relative" }}>
+        <div style={{ width: currentSidebarWidth+"px", transition: "width 0.3s", position: "relative" }}>
+            <div style={{ width: (sidebarWidth-menuButtonSpace)+"px", position: "absolute", right: menuButtonSpace }}>
+                <h2>Menu</h2>
+            </div>
             <div style={{ display: "flex", justifyContent: "flex-end", marginRight: "5px" }}>
+
                 <Button onClick={() => setShowSidebar(!showSidebar)}>
                     <FaBars />
                 </Button>
             </div>
-            <div style={{ width: "250px", position: "absolute", right: 0, height: "100%" }}>
+            <div style={{ width: sidebarWidth+"px", position: "absolute", right: 0, height: "100%" }}>
                 <div style={{ opacity: showSidebar ? 1 : 0, transition: "opacity 0.3s" }}>
                     {sidebar}
                 </div>
