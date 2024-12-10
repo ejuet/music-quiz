@@ -8,17 +8,19 @@ import { useState } from "react";
 import { FaBars } from "react-icons/fa";
 
 
-function WithSidebar({ children }: { children: React.ReactNode }) {
+function WithSidebar({ children, sidebar }: { children: React.ReactNode, sidebar: React.ReactNode }) {
     const [showSidebar, setShowSidebar] = useState(false);
     return <div style={{ display: "flex" }}>
-        <div style={{ width: showSidebar ? "250px" : "50px", transition: "width 0.3s" }}>
+        <div style={{ width: showSidebar ? "250px" : "50px", transition: "width 0.3s", position: "relative" }}>
             <div style={{ display: "flex", justifyContent: "flex-end", marginRight: "5px" }}>
                 <Button onClick={() => setShowSidebar(!showSidebar)}>
                     <FaBars />
                 </Button>
             </div>
-            <div style={{ opacity: showSidebar ? 1 : 0, transition: "opacity 0.3s" }}>
-                <p>Music Quiz</p>
+            <div style={{ width: "250px", position: "absolute", right: 0, height: "100%" }}>
+                <div style={{ opacity: showSidebar ? 1 : 0, transition: "opacity 0.3s" }}>
+                    {sidebar}
+                </div>
             </div>
         </div>
         <div style={{ flex: 1 }}>
@@ -27,6 +29,18 @@ function WithSidebar({ children }: { children: React.ReactNode }) {
     </div>
 }
 
+function WithGameSidebar({ children }: { children: React.ReactNode }) {
+    const currentGame = useCurrentGame();
+    const currentQuiz = useCurrentQuiz();
+    return <WithSidebar sidebar={<div>
+        <h2>Game</h2>
+        <p>Current Game: {currentGame?.name}</p>
+        <p>Current Quiz: {currentQuiz?.name}</p>
+    </div>}>
+
+        {children}
+    </WithSidebar>
+}
 
 export function PlayGame(){
     const currentGame = useCurrentGame();
@@ -49,7 +63,7 @@ export function PlayGame(){
                 setAppData(appData);
             }}>Start Game</Button>
         }
-        <WithSidebar>
+        <WithGameSidebar>
         {
             nextActions.map((action, index) => <DisplayAction key={index} action={action} />)
         }
@@ -62,7 +76,7 @@ export function PlayGame(){
             setAppData(appData);
         }}>Next</Button>
 
-        </WithSidebar>
+        </WithGameSidebar>
     </>
 }
 
