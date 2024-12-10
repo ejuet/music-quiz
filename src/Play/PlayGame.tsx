@@ -3,6 +3,7 @@ import React from "react";
 import { useAppDataContext, useCurrentGame, useCurrentQuiz } from "../Logic/AppDataContext.tsx";
 import { FinishGame, GameAction, SelectQuestion, ShowQuestionPart, TeamAction } from "../Logic/gameStructure.ts";
 import { RenderShowQuestionPart } from "./RenderQuestion.tsx";
+import { QuizGrid } from "../QuizEditor/Grid.tsx";
 
 export function PlayGame(){
     const currentGame = useCurrentGame();
@@ -74,20 +75,34 @@ function SelectQuestionAction({ action }: { action: SelectQuestion }) {
     const team = useCurrentTeam();
     const { appData, setAppData } = useAppDataContext();
 
+    if(!team || !currentQuiz) {
+        return <h1>Team or Quiz not found</h1>;
+    }
+
     return <div>
         <h1>Select Question</h1>
         <p>Team <b>{team?.name}</b> has to select their next question!</p>
         <ShowCurrentScore />
-        {
-            currentQuiz?.items.map((q) => {
-                if(action.availableQuestions.includes(q.questionId)){
-                    return <Button onClick={() => {
-                        action.questionId = q.questionId;
-                        setAppData(appData);
-                    }}>{q.questionId} {q.getPoints()} Punkte</Button>
-                }
-            })
-        }
+        <QuizGrid
+            quiz={currentQuiz}
+            renderQuestions={(questions, category, points) => {
+                return <>
+                    {
+                        questions.map((question) => {
+                            return <Button onClick={() => {
+                                action.questionId = question.questionId;
+                                setAppData(appData);
+                            }}
+                            disabled={!action.availableQuestions.includes(question.questionId)}
+                            >
+                                Select ({category.name} {points}p)
+                            </Button>
+                        })
+                    }
+                </>
+            }
+            }
+        />
     </div>
 }  
 

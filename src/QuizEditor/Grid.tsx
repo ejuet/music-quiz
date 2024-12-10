@@ -12,13 +12,28 @@ import DeleteButton from '../Common/DeleteButton.tsx';
 interface QuizGridProps {
     quiz: MusicQuiz
     renderQuestions: (question: Question[], category: Category, points: number) => JSX.Element
-    renderCategory: (category: Category) => JSX.Element
-    renderPoints: (points: number) => JSX.Element
-    renderAdditionalColumns: (category: Category) => JSX.Element
-    renderAdditionalRows: () => JSX.Element
+    renderCategory?: (category: Category) => JSX.Element
+    renderPoints?: (points: number) => JSX.Element
+    renderAdditionalColumns?: (category: Category) => JSX.Element
+    renderAdditionalRows?: () => JSX.Element
 }
 
-export function QuizGrid(props: QuizGridProps) {
+export function QuizGrid({
+    quiz,
+    renderQuestions,
+    renderCategory = (category) => <>{category.name}</>,
+    renderPoints = (points) => <>{points}</>,
+    renderAdditionalColumns = () => <></>,
+    renderAdditionalRows = () => <></>,
+}: QuizGridProps) {
+    const props = {
+        quiz,
+        renderQuestions,
+        renderCategory,
+        renderPoints,
+        renderAdditionalColumns,
+        renderAdditionalRows
+    }
     return (
         <div>
             <Table>
