@@ -196,7 +196,28 @@ export class MultiQuestion extends BasicQuestion {
     }
 }
 
-export const questionTypes = [SimpleQuestion, MultiQuestion];
+export class ChangePointsManually extends BasicQuestion {
+    questionType: string = "ChangePointsManually";
+    text: DisplayableText;
+    points: number;
+    constructor() {
+        super();
+        this.text = new SimpleText();
+        this.text.text = "Enter a custom amount of points below."
+    }
+
+    getParts(): QuestionPart[] {
+        return [this.text, new PageBreak()];
+    }
+    getPoints(): number {
+        return this.points;
+    }
+    setPoints(points: number): void {
+        this.points = points;
+    }
+}
+
+export const questionTypes = [SimpleQuestion, MultiQuestion, ChangePointsManually];
 
 //export type Question = QuestionWithParts | SimpleQuestion | OneQuestionPart;
 

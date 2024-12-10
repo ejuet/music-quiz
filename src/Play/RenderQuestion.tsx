@@ -1,5 +1,5 @@
 import React from "react";
-import { DisplayableText, PlayableSong, Question, QuestionPartP, RightOrWrong, ShowAnswerButton, SimpleQuestion, SimpleQuestionContent } from "../Logic/structure.ts";
+import { DisplayableText, PlayableSong, Question, QuestionPartP, RightOrWrong, ShowAnswerButton, SimpleQuestion, SimpleQuestionContent, SimpleText } from "../Logic/structure.ts";
 import { RenderDisplayableText } from "../Common/DisplayableText.tsx";
 import { Button, ButtonGroup, ToggleButton } from "react-bootstrap";
 import { PlayAudio } from "../Database/DatabaseComponents.tsx";
@@ -14,8 +14,8 @@ export function RenderShowQuestionPart({ action }: { action: ShowQuestionPart })
             <p>{part}</p>
         }
         {
-            part.partType === 'DisplayableText' &&
-            <RenderDisplayableText text={part as DisplayableText} />
+            part.partType === 'SimpleText' &&
+            <RenderDisplayableText text={part as SimpleText} />
         }
         {
             part.partType === 'PlayableSong' &&

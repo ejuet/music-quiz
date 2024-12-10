@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, ButtonGroup, Card, Dropdown, Form } from "react-bootstrap";
-import { DisplayableText, MultiQuestion, PlayableSong, Question, SimpleQuestion, SimpleQuestionContent } from "../../Logic/structure.ts";
+import { DisplayableText, MultiQuestion, PlayableSong, Question, QuestionPart, QuestionPartP, RightOrWrong, SimpleQuestion, SimpleQuestionContent, SimpleText } from "../../Logic/structure.ts";
 import { isRight } from "fp-ts/lib/Either";
 import * as t from 'io-ts';
 import { useAppDataContext, useCurrentQuiz } from "../../Logic/AppDataContext.tsx";
@@ -11,21 +11,57 @@ import { UploadSoundFile } from "../Media/DropZoneSound.tsx";
 import DeleteButton from "../../Common/DeleteButton.tsx";
 
 export function EditQuestion({ question }: { question: Question }) {
+    const questionEditors: {
+        [key: string]: (question: Question) => JSX.Element
+    } = {
+        'SimpleQuestion': (question) => <SimpleQuestionEditor question={(question as SimpleQuestion).content} />,
+        'MultiQuestion': (question) => <MultiQuestionEditor question={(question as MultiQuestion)} />
+    }
     return <Card className="p-2">
         <small>Type: {question.questionType}</small>
         <small>Question ID: {question.questionId}</small>
         {
-            question.questionType === 'SimpleQuestion' &&
-            <SimpleQuestionEditor question={(question as SimpleQuestion).content} />
+            questionEditors.hasOwnProperty(question.questionType) &&
+            questionEditors[question.questionType](question)
         }
         {
-            question.questionType === 'MultiQuestion' &&
-            <MultiQuestionEditor question={(question as MultiQuestion)} />
+            !questionEditors.hasOwnProperty(question.questionType) &&
+            <>
+            <p>There is no custom editor for question type {question.questionType}.</p>
+            {
+                question.getParts().map((part, index) => {
+                    return <div key={index}>
+                        {
+                            JSON.stringify(part)
+                        }
+                        <EditQuestionPart question={question} partIndex={index} />
+                    </div>
+                })
+            }
+            </>
         }
         <Form.Label>Category</Form.Label>
         <EditCategory category={question.category} onChange={(value) => question.category = value} />
         <DeleteQuestionButton question={question} />
     </Card>
+}
+
+function EditQuestionPart({ question, partIndex }: { question: Question, partIndex: number }) {
+    const part = question.getParts()[partIndex] as QuestionPartP;
+    return <>
+        {
+            part instanceof SimpleText &&
+            <EditText text={part as DisplayableText} onChange={(value) => part.text = value} />
+        }
+        {
+            part.partType === 'PlayableSong' &&
+            <EditSong song={part as PlayableSong} onChange={(value) => question.getParts()[partIndex] = value} />
+        }
+        {
+            part.partType === 'RightOrWrong' &&
+            <EditNumber number={(part as RightOrWrong).pointsIfRight} onChange={(value) => (question.getParts()[partIndex] as RightOrWrong).pointsIfRight = value} />
+        }
+    </>
 }
 
 function MultiQuestionEditor({ question }: { question: MultiQuestion }) {
