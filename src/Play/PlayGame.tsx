@@ -1,7 +1,7 @@
 import { Button } from "react-bootstrap";
 import React from "react";
 import { useAppDataContext, useCurrentGame, useCurrentQuiz } from "../Logic/AppDataContext.tsx";
-import { AnswerQuestion, FinishGame, GameAction, SelectQuestion, ShowQuestionPart, TeamAction } from "../Logic/gameStructure.ts";
+import { FinishGame, GameAction, SelectQuestion, ShowQuestionPart, TeamAction } from "../Logic/gameStructure.ts";
 import { RenderShowQuestionPart } from "./RenderQuestion.tsx";
 
 export function PlayGame(){
