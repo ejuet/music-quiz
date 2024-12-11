@@ -1,5 +1,5 @@
 import React from 'react';
-import { Category, MultiQuestion, MusicQuiz, Question, questionTypes, SimpleQuestion } from '../Logic/structure.ts';
+import { Category, MultiQuestion, MusicQuiz, Question, questionTypeList, SimpleQuestion } from '../Logic/structure.ts';
 import { useAppDataContext, useCurrentQuiz } from '../Logic/AppDataContext.tsx';
 import { Button, Table } from 'react-bootstrap';
 import { EditNumber, EditQuestion, EditText } from './QuestionEditor/EditQuestion.tsx';
@@ -174,7 +174,7 @@ function AddQuestionButton({ category, points=0 }: { category: Category, points?
 }
 
 function AddQuestionOfTypeButton({ category, points=0 }: { category: Category, points?: number }) {
-    const availableTypes = questionTypes
+    const availableTypes = questionTypeList
     const [showDropdown, setShowDropdown] = useState(false);
     const currentQuiz = useCurrentQuiz();
     const { setAppData, appData } = useAppDataContext();
@@ -190,7 +190,7 @@ function AddQuestionOfTypeButton({ category, points=0 }: { category: Category, p
                         <Dropdown.Item
                             key={type.name}
                             onClick={() => {
-                                const newQuestion = new type();
+                                const newQuestion = new type.type();
                                 newQuestion.category = category.id;
                                 newQuestion.setPoints(points? points : currentQuiz!.items.reduce((acc, item) => Math.max(acc, item.getPoints()), 0) + 10);
                                 currentQuiz!.items.push(newQuestion);

@@ -97,7 +97,14 @@ export type DisplayableText = SimpleText | string;
 
 export type QuestionPart = SimpleText | PlayableSong | RightOrWrong | DisplayableText | ShowAnswerButton | PageBreak | EnterCustomPoints;
 
-export const questionPartTypes = [SimpleText, PlayableSong, RightOrWrong, ShowAnswerButton, PageBreak, EnterCustomPoints];
+export const questionPartTypeList = [
+    { name: 'Simple Text', type: SimpleText },
+    { name: 'Playable Song', type: PlayableSong },
+    { name: 'Right Or Wrong', type: RightOrWrong },
+    { name: 'Show Answer Button', type: ShowAnswerButton },
+    { name: 'Page Break', type: PageBreak },
+    { name: 'Enter Custom Points', type: EnterCustomPoints }
+]
 
 // ---------- Define the "Question" type ----------
 
@@ -246,7 +253,12 @@ export class CustomQuestion extends BasicQuestion {
     }
 }
 
-export const questionTypes = [SimpleQuestion, MultiQuestion, ChangePointsManually, CustomQuestion];
+export const questionTypeList = [
+    { name: 'Simple Question', type: SimpleQuestion },
+    { name: 'Multi Question', type: MultiQuestion },
+    { name: 'Change Points Manually', type: ChangePointsManually },
+    { name: 'Custom Question', type: CustomQuestion }
+]
 
 //export type Question = QuestionWithParts | SimpleQuestion | OneQuestionPart;
 

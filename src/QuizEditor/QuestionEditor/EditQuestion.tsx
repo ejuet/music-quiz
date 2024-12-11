@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, ButtonGroup, Card, Dropdown, Form } from "react-bootstrap";
-import { CustomQuestion, DisplayableText, MultiQuestion, PlayableSong, Question, QuestionPart, QuestionPartP, questionPartTypes, RightOrWrong, SimpleQuestion, SimpleQuestionContent, SimpleText } from "../../Logic/structure.ts";
+import { CustomQuestion, DisplayableText, MultiQuestion, PlayableSong, Question, QuestionPart, QuestionPartP, questionPartTypeList, RightOrWrong, SimpleQuestion, SimpleQuestionContent, SimpleText } from "../../Logic/structure.ts";
 import { isRight } from "fp-ts/lib/Either";
 import * as t from 'io-ts';
 import { useAppDataContext, useCurrentQuiz } from "../../Logic/AppDataContext.tsx";
@@ -124,20 +124,14 @@ export function SortableItem(props: { id: string, children: React.ReactNode }) {
 }
 
 function AddQuestionPartButton({ question }: { question: CustomQuestion }) {
-    const options = questionPartTypes
-    const optionMap = options.map((option) => {
-        return {
-            name: option.name,
-            typ: option
-        }
-    });
+    const optionMap = questionPartTypeList
     const { setAppData, appData } = useAppDataContext();
     const [selectedPartType, setSelectedPartType] = useState(optionMap[0]);
 
     return (
         <ButtonGroup>
             <Button onClick={() => {
-                question.content.push(new selectedPartType.typ());
+                question.content.push(new selectedPartType.type());
                 setAppData(appData);
             }}>Add Part</Button>
             <Dropdown>
