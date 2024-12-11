@@ -13,10 +13,11 @@ import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, Keyboa
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import ButtonWithModal from "../../Common/ButtonWithModal.tsx";
 
 
 
-export function EditQuestion({ question }: { question: Question }) {
+export function EditQuestion({ question, replaceQuestion }: { question: Question, replaceQuestion: (newQuestion: Question) => void }) {
     const questionEditors: {
         [key: string]: (question: Question) => JSX.Element
     } = {
@@ -26,6 +27,17 @@ export function EditQuestion({ question }: { question: Question }) {
     }
     return <Card className="p-2">
         <small>Type: {question.questionType}</small>
+        {
+            question.questionType !== "CustomQuestion" &&
+            <ButtonWithModal buttonContent="Change Type" modalTitle="Change Question Type" onAction={()=>{
+                const newQuestion = new CustomQuestion();
+                newQuestion.content = question.getParts() as QuestionPartP[];
+                newQuestion.setPoints(question.getPoints());
+                newQuestion.category = question.category
+                replaceQuestion(newQuestion);
+            }} modalBody={"Do you really want to convert this question to a custom question? This action is irreversible."} />
+
+        }
         <small>Question ID: {question.questionId}</small>
         {
             questionEditors.hasOwnProperty(question.questionType) &&

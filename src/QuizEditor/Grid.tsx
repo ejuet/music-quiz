@@ -83,7 +83,16 @@ export function Grid(){
         renderQuestions={(questions, category, points) => {
             return <>
                 {
-                    questions.map((question, ind) => <EditQuestion key={ind} question={question} />)
+                    questions.map((question, ind) => <EditQuestion key={ind} question={question} replaceQuestion={(q)=>{
+                        const index = currentQuiz.items.indexOf(question);
+                        if(index === -1){
+                            console.log("Question not found");
+                            return;
+                        }
+                        console.log("Replacing question at index "+index);
+                        currentQuiz.items[index] = q;
+                        setAppData(appData);
+                    }} />)
                 }
                 {
                     questions.length === 0 &&
