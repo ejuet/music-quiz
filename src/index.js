@@ -105,7 +105,9 @@ function WithNavbar({ children }) {
     <>
       <div className='mx-4'>
         <Navbar expand="lg">
-          <Navbar.Brand href="/#/">Music Quiz</Navbar.Brand>
+          <Link to="/" style={{textDecoration: 'none', color: 'inherit'}} className='my-1'>
+            <Navbar.Brand>Music Quiz</Navbar.Brand>
+          </Link>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
