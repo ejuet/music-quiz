@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/music-quiz/static/css/main.fafc8537.css",
-    "main.js": "/music-quiz/static/js/main.0f7de9fd.js",
+    "main.js": "/music-quiz/static/js/main.dcbeda13.js",
     "index.html": "/music-quiz/index.html",
     "main.fafc8537.css.map": "/music-quiz/static/css/main.fafc8537.css.map",
-    "main.0f7de9fd.js.map": "/music-quiz/static/js/main.0f7de9fd.js.map"
+    "main.dcbeda13.js.map": "/music-quiz/static/js/main.dcbeda13.js.map"
   },
   "entrypoints": [
     "static/css/main.fafc8537.css",
-    "static/js/main.0f7de9fd.js"
+    "static/js/main.dcbeda13.js"
   ]
 }
