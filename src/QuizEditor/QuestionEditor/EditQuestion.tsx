@@ -76,11 +76,15 @@ function CustomQuestionEditor({ question }: { question: CustomQuestion }) {
         <SortableContext items={question.content.map((_, index) => index.toString())} strategy={verticalListSortingStrategy}>
             {question.content.map((part, index) => (
                 <SortableItem key={index} id={index.toString()}>
-                    <EditQuestionPart question={question} partIndex={index} />
-                    <DeleteButton onDelete={() => {
-                        question.content = question.content.filter((_, i) => i !== index);
-                        setAppData(appData);
-                    }} customMessage={"Are you sure you want to delete " + part.partType + "?"} />
+                    <div className="d-flex align-items-center w-100">
+                        <div className="flex-grow-1">
+                            <EditQuestionPart question={question} partIndex={index} />
+                        </div>
+                        <DeleteButton onDelete={() => {
+                            question.content = question.content.filter((_, i) => i !== index);
+                            setAppData(appData);
+                        }} customMessage={"Are you sure you want to delete " + part.partType + "?"} />
+                    </div>
                 </SortableItem>
             ))}
         </SortableContext>
