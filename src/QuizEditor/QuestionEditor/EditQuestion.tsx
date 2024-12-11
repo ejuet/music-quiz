@@ -9,6 +9,12 @@ import { getFilesFromIndexedDB } from "../../Logic/database.ts";
 import { PlayAudio, useAudioFiles } from "../../Database/DatabaseComponents.tsx";
 import { UploadSoundFile } from "../Media/DropZoneSound.tsx";
 import DeleteButton from "../../Common/DeleteButton.tsx";
+import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, KeyboardSensor } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+
 
 export function EditQuestion({ question }: { question: Question }) {
     const questionEditors: {
@@ -45,20 +51,60 @@ export function EditQuestion({ question }: { question: Question }) {
 
 function CustomQuestionEditor({ question }: { question: CustomQuestion }) {
     const { setAppData, appData } = useAppDataContext();
+
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    const handleDragEnd = (event) => {
+        const { active, over } = event;
+
+        if (active.id !== over.id) {
+            const oldIndex = parseInt(active.id);
+            const newIndex = parseInt(over.id);
+
+            question.content = arrayMove(question.content, oldIndex, newIndex);
+            setAppData(appData);
+        }
+    };
+
     return <>
-        {
-            question.content.map((part, index) => {
-                return <div key={index}>
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={question.content.map((_, index) => index.toString())} strategy={verticalListSortingStrategy}>
+            {question.content.map((part, index) => (
+                <SortableItem key={index} id={index.toString()}>
                     <EditQuestionPart question={question} partIndex={index} />
                     <DeleteButton onDelete={() => {
-                        question.content = question.content.filter((item) => item !== part);
+                        question.content = question.content.filter((_, i) => i !== index);
                         setAppData(appData);
                     }} customMessage={"Are you sure you want to delete " + part.partType + "?"} />
-                </div>
-            })
-        }
-        <AddQuestionPartButton question={question} />
-    </>
+                </SortableItem>
+            ))}
+        </SortableContext>
+    </DndContext>
+    <AddQuestionPartButton question={question} />
+    </> 
+}
+
+export function SortableItem(props: { id: string, children: React.ReactNode }) {
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: props.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} className="d-flex align-items-center">
+            <div className="drag-handle me-2" {...listeners} {...attributes} style={{ cursor: 'grab' }}>☰</div>
+            <div className="flex-grow-1">
+                {props.children}
+            </div>
+        </div>
+    );
 }
 
 function AddQuestionPartButton({ question }: { question: CustomQuestion }) {
